@@ -1,0 +1,38 @@
+---
+description: Git workflow rules for Cronis.
+alwaysApply: true
+---
+
+# Git Workflow
+
+Never commit automatically.
+
+Never push automatically.
+
+Never create releases automatically.
+
+The developer always reviews every change before committing.
+
+## File Changes
+
+Only modify files required for the current task.
+
+Avoid unnecessary formatting-only changes.
+
+Do not rename files unless required.
+
+## Pull Requests
+
+Keep changes focused.
+
+Avoid mixing multiple unrelated features into one implementation.
+
+## Development Process
+
+Every task should follow this workflow:
+
+1. Understand the task.
+2. Implement only the requested functionality.
+3. Ensure the project builds successfully.
+4. Explain what changed.
+5. Stop and wait for developer review.

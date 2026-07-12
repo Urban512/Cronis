@@ -1,0 +1,66 @@
+---
+description: Core project rules for Cronis.
+alwaysApply: true
+---
+
+# Cronis Project Rules
+
+You are contributing to **Cronis**, a premium client-side Fabric HUD framework for modern Hypixel SkyBlock.
+
+## Project Goals
+
+Always prioritize:
+
+- Maintainability
+- Readability
+- Performance
+- Consistency
+
+Never sacrifice long-term quality for short-term speed.
+
+## Scope
+
+Only implement the requested task.
+
+Do not implement additional features unless explicitly requested.
+
+Do not modify unrelated files.
+
+If requirements are unclear, ask questions before making assumptions.
+
+## Architecture
+
+Respect the existing project architecture.
+
+Reuse existing systems instead of creating duplicate ones.
+
+Keep the codebase modular and easy to extend.
+
+## Performance
+
+Performance is a feature.
+
+Avoid unnecessary allocations.
+
+Avoid unnecessary rendering work.
+
+Never introduce code that could noticeably impact FPS without good reason.
+
+## Hypixel Safety
+
+Cronis must always remain fully compliant with Hypixel rules.
+
+Never implement:
+
+- Macros
+- Automation
+- Packet manipulation
+- Auto clicking
+- AFK systems
+- Any feature that provides unfair gameplay advantages
+
+If a requested feature may violate Hypixel rules, explain why instead of implementing it.
+
+## Documentation
+
+When adding new systems or public APIs, update documentation when appropriate.

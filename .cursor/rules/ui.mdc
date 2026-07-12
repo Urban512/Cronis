@@ -1,0 +1,147 @@
+---
+description: User interface and design rules for Cronis.
+alwaysApply: true
+---
+
+# Cronis UI Rules
+
+Cronis is designed to feel like premium software rather than a traditional Minecraft mod.
+
+Every UI element should be clean, modern, consistent and intentional.
+
+---
+
+# Design Philosophy
+
+Follow these principles at all times:
+
+- Every pixel must have a purpose.
+- If it doesn't look premium, it doesn't ship.
+- Great by default. Powerful when needed.
+- Consistency over complexity.
+- Performance is a feature.
+
+---
+
+# General Appearance
+
+The interface should feel:
+
+- Modern
+- Minimal
+- Elegant
+- Premium
+- Professional
+
+Avoid visual clutter.
+
+Avoid unnecessary decorations.
+
+Avoid excessive gradients or effects.
+
+---
+
+# Layout
+
+Prefer simple layouts.
+
+Group related settings together.
+
+Maintain consistent spacing throughout the interface.
+
+Do not overload a single screen with options.
+
+---
+
+# Components
+
+Reuse existing UI components whenever possible.
+
+Avoid creating multiple visual styles for the same component.
+
+Buttons, cards, switches, sliders and dropdowns should remain visually consistent.
+
+---
+
+# Widgets
+
+Every widget should look like part of the same product.
+
+Widgets should:
+
+- have a clear visual hierarchy
+- be readable at a glance
+- support future themes
+- support future customization
+- remain compact
+
+Do not create widgets that look disconnected from the rest of the UI.
+
+---
+
+# Typography
+
+Text should always prioritize readability.
+
+Avoid excessive font sizes.
+
+Avoid unnecessary capitalization.
+
+Use consistent spacing between text elements.
+
+---
+
+# Colors
+
+Prefer a restrained color palette.
+
+Accent colors should highlight important information, not decorate the interface.
+
+Avoid using too many colors within a single widget.
+
+---
+
+# Animations
+
+Animations should be:
+
+- smooth
+- subtle
+- responsive
+
+Animations should improve the experience, never distract from it.
+
+Avoid flashy effects.
+
+---
+
+# Configuration
+
+Every configurable option should have a clear purpose.
+
+Do not expose settings that provide little practical value.
+
+Reasonable defaults are preferred over excessive customization.
+
+---
+
+# User Experience
+
+The user should never need to read documentation to understand the interface.
+
+Common actions should be obvious.
+
+Navigation should be predictable.
+
+---
+
+# Before Adding UI
+
+Ask yourself:
+
+- Does this improve the user experience?
+- Does this match the rest of Cronis?
+- Is this visually consistent?
+- Is this necessary?
+
+If the answer is "no", reconsider the implementation.

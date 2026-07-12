@@ -1,0 +1,54 @@
+---
+description: Java coding standards for Cronis.
+alwaysApply: true
+---
+
+# Java Standards
+
+Write modern Java.
+
+Target Java 25.
+
+## Code Quality
+
+Prefer readable code over clever code.
+
+Keep methods reasonably short.
+
+Keep classes focused on a single responsibility.
+
+Avoid deeply nested logic.
+
+Avoid duplicated code.
+
+Prefer composition over inheritance where appropriate.
+
+## Naming
+
+Use descriptive class names.
+
+Use descriptive method names.
+
+Avoid abbreviations unless they are widely understood.
+
+## Comments
+
+Do not add unnecessary comments.
+
+Explain *why*, not *what*.
+
+Write Javadocs for public APIs when useful.
+
+## Error Handling
+
+Handle errors gracefully.
+
+Avoid silent failures.
+
+Provide meaningful exception messages.
+
+## Refactoring
+
+Do not refactor unrelated code during feature implementation.
+
+Only refactor when it improves the current task.
