@@ -4,7 +4,7 @@ Thank you for your interest in Cronis.
 
 ## Requirements
 
-- Java 21
+- Java 25
 
 - Fabric
 
