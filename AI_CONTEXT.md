@@ -19,13 +19,16 @@ Create the cleanest, most modern and most customizable HUD framework for Hypixel
 # Target Platform
 
 Minecraft:
-1.26.1.2
+26.1.2
 
 Loader:
 Fabric
 
 Java:
-Java 21
+Java 25
+
+Mappings:
+Official Mojang Mappings
 
 Client-side only.
 
