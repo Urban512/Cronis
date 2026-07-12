@@ -3,15 +3,15 @@
 	"id": "cronis",
 	"version": "${version}",
 	"name": "Cronis",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A clean, modern and highly customizable HUD framework for Hypixel SkyBlock.",
 	"authors": [
-		"Me!"
+		"Cronis Team"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://github.com/Urban512/Cronis",
+		"sources": "https://github.com/Urban512/Cronis"
 	},
-	"license": "CC0-1.0",
+	"license": "MIT",
 	"icon": "assets/cronis/icon.png",
 	"environment": "*",
 	"entrypoints": {
