@@ -32,6 +32,12 @@ Official Mojang Mappings
 
 Client-side only.
 
+Always treat 26.1.2 as the authoritative target version for this project.
+
+Never change the Gradle Minecraft version unless explicitly instructed.
+
+When researching documentation, APIs, mappings or examples, use resources that correspond to the same target version. If external documentation refers to this release as Minecraft 1.21.6, treat it as equivalent to the project's configured version (26.1.2). All generated code must remain compatible with the project's Gradle configuration.
+
 ---
 
 # Design Philosophy

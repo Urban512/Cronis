@@ -1,12 +1,10 @@
 package dev.cronis.gui.util;
 
 /**
- * Represents the width and height of a GUI element.
- * <p>
- * Sizes are used by layout calculations and component bounds without coupling
- * widgets to Minecraft screen APIs.
+ * Immutable width and height of a GUI element.
+ *
+ * @param width  width in pixels
+ * @param height height in pixels
  */
-public class GuiSize {
-	public GuiSize() {
-	}
+public record GuiSize(int width, int height) {
 }
