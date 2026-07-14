@@ -83,3 +83,19 @@ Warning
 Danger
 
 #EF4444
+
+Accent
+
+Primary
+
+Secondary
+
+Muted
+
+Success
+
+Warning
+
+Danger
+
+Info

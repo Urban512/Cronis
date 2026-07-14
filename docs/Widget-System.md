@@ -11,3 +11,19 @@ Widgets are resizable.
 Widgets can be enabled or disabled.
 
 Widgets use the Theme Engine.
+
+Widgets are completely independent.
+
+Every widget has
+
+Position
+
+Scale
+
+Theme
+
+Visibility
+
+Anchor
+
+Animation

@@ -31,3 +31,21 @@ Animation duration
 Use easing.
 
 Avoid linear animations.
+
+Supported
+
+Fade
+
+Scale
+
+Slide
+
+Rotation
+
+Color
+
+Hover
+
+Open
+
+Close

@@ -15,3 +15,11 @@ Target:
 60 FPS minimum
 
 Hypixel safe.
+
+Never allocate objects every frame.
+
+Avoid new Color()
+
+Avoid new Rect()
+
+Reuse buffers.
