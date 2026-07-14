@@ -13,7 +13,7 @@ public class GuiContentPanel extends GuiComponent {
 
 	public GuiContentPanel() {
 		addChild(scrollPanel);
-		scrollPanel.addChild(GuiLabel.primary("Welcome to Cronis"));
+		scrollPanel.addChild(GuiLabel.heading("Welcome to Cronis"));
 		scrollPanel.addChild(new GuiCard("Welcome", "Your premium SkyBlock HUD framework."));
 		scrollPanel.addChild(new GuiCard("Latest News", "Cronis is in early development."));
 		scrollPanel.addChild(new GuiCard("Installed Modules", "No modules installed yet."));

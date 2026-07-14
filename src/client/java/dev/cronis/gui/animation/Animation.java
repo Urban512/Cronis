@@ -18,12 +18,6 @@ public abstract class Animation {
 	public abstract void update(float delta);
 
 	protected float step(float current, float target, float delta) {
-		if (current < target) {
-			return Math.min(target, current + speed * delta);
-		}
-		if (current > target) {
-			return Math.max(target, current - speed * delta);
-		}
-		return current;
+		return Easing.easeOut(current, target, delta, speed);
 	}
 }

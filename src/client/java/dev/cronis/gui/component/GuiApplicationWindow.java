@@ -14,7 +14,7 @@ public class GuiApplicationWindow extends GuiWindow {
 	private final GuiHeader header = new GuiHeader();
 	private final GuiSidebar sidebar = new GuiSidebar();
 	private final GuiContentPanel contentPanel = new GuiContentPanel();
-	private final dev.cronis.gui.animation.FadeAnimation openAnimation = new dev.cronis.gui.animation.FadeAnimation(4f);
+	private final dev.cronis.gui.animation.FadeAnimation openAnimation = new dev.cronis.gui.animation.FadeAnimation(8f);
 
 	public GuiApplicationWindow() {
 		super("", GuiWindowStyle.defaults(), new dev.cronis.gui.render.BlurRenderer());
@@ -69,8 +69,6 @@ public class GuiApplicationWindow extends GuiWindow {
 		RoundedRenderer.fill(context, x, y, width, height, style.cornerRadius(), background);
 		RoundedRenderer.outline(context, x, y, width, height, style.cornerRadius(), 1, ColorUtil.withAlpha(theme.windowBorder(), fade));
 
-		context.fill(x + GuiSidebar.WIDTH, y + GuiHeader.HEIGHT, x + width, y + GuiHeader.HEIGHT + 1, theme.headerDivider());
-
 		header.render(context, font);
 		sidebar.render(context, font);
 		contentPanel.render(context, font);
@@ -85,7 +83,8 @@ public class GuiApplicationWindow extends GuiWindow {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-		return contentPanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+		return sidebar.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
+				|| contentPanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
 	private void layoutSections() {

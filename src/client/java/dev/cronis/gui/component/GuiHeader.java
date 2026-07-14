@@ -1,7 +1,10 @@
 package dev.cronis.gui.component;
 
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.render.IconRenderer;
 import dev.cronis.gui.theme.ThemeManager;
+import dev.cronis.util.CronisLinks;
+import dev.cronis.util.LinkOpener;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -9,12 +12,15 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Top application header containing search and action icons.
  */
 public class GuiHeader extends GuiComponent {
-	public static final int HEIGHT = 52;
+	public static final int HEIGHT = 56;
+
+	private static final int ICON_GAP = Spacing.MD;
 
 	private final GuiSearchBar searchBar = new GuiSearchBar("Search Cronis...");
-	private final GuiIconButton settingsButton = new GuiIconButton("S");
-	private final GuiIconButton discordButton = new GuiIconButton("D");
-	private final GuiIconButton githubButton = new GuiIconButton("G");
+	private final GuiIconButton settingsButton = new GuiIconButton(IconRenderer.Icon.SETTINGS);
+	private final GuiIconButton discordButton = new GuiIconButton(IconRenderer.Icon.DISCORD)
+			.setOnClick(() -> LinkOpener.open(CronisLinks.DISCORD));
+	private final GuiIconButton githubButton = new GuiIconButton(IconRenderer.Icon.GITHUB);
 
 	public GuiHeader() {
 		this.height = HEIGHT;
@@ -32,12 +38,17 @@ public class GuiHeader extends GuiComponent {
 	public void layoutHeader(int x, int y, int width) {
 		setBounds(x, y, width, HEIGHT);
 		int padding = Spacing.LG;
-		searchBar.setBounds(x + padding, y + (HEIGHT - searchBar.getPreferredHeight(width)) / 2, 240, searchBar.getPreferredHeight(width));
+		int iconWidth = settingsButton.getPreferredWidth(HEIGHT);
+		int iconGroupWidth = iconWidth * 3 + ICON_GAP * 2;
+		int searchWidth = searchBar.resolveWidth(width - padding * 2 - iconGroupWidth - Spacing.LG);
+		int searchY = y + (HEIGHT - searchBar.getPreferredHeight(width)) / 2;
+		searchBar.setBounds(x + padding, searchY, searchWidth, searchBar.getPreferredHeight(width));
 
 		int iconY = y + (HEIGHT - settingsButton.getPreferredHeight(width)) / 2;
-		githubButton.setBounds(x + width - padding - githubButton.getPreferredWidth(HEIGHT), iconY, githubButton.getPreferredWidth(HEIGHT), githubButton.getPreferredHeight(width));
-		discordButton.setBounds(githubButton.getBounds().x() - Spacing.SM - discordButton.getPreferredWidth(HEIGHT), iconY, discordButton.getPreferredWidth(HEIGHT), discordButton.getPreferredHeight(width));
-		settingsButton.setBounds(discordButton.getBounds().x() - Spacing.SM - settingsButton.getPreferredWidth(HEIGHT), iconY, settingsButton.getPreferredWidth(HEIGHT), settingsButton.getPreferredHeight(width));
+		int iconX = x + width - padding - iconWidth;
+		githubButton.setBounds(iconX, iconY, iconWidth, settingsButton.getPreferredHeight(width));
+		discordButton.setBounds(iconX - ICON_GAP - iconWidth, iconY, iconWidth, settingsButton.getPreferredHeight(width));
+		settingsButton.setBounds(discordButton.getBounds().x() - ICON_GAP - iconWidth, iconY, iconWidth, settingsButton.getPreferredHeight(width));
 	}
 
 	@Override

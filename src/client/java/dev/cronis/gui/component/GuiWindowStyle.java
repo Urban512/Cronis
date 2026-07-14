@@ -32,16 +32,16 @@ public record GuiWindowStyle(
 		return new GuiWindowStyle(
 				theme.windowBackground(),
 				theme.windowBorder(),
+				18,
 				16,
-				14,
-				0.38f,
+				0.42f,
 				theme.textPrimary(),
 				Padding.all(0),
-				0.72f,
-				0.78f,
+				0.74f,
+				0.80f,
+				480,
 				320,
-				240,
-				20,
+				16,
 				false
 		);
 	}

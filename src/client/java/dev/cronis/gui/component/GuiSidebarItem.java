@@ -14,13 +14,14 @@ import java.util.function.Consumer;
  * Sidebar navigation item with hover, selection, and disabled states.
  */
 public class GuiSidebarItem extends GuiComponent {
-	private static final int HEIGHT = 34;
-	private static final int CORNER_RADIUS = 6;
-	private static final int ICON_SIZE = 8;
+	private static final int HEIGHT = 36;
+	private static final int CORNER_RADIUS = 8;
+	private static final int ACCENT_WIDTH = 3;
+	private static final int ICON_SIZE = 6;
 
 	private final String label;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(8f);
-	private final FadeAnimation selectionAnimation = new FadeAnimation(6f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(12f);
+	private final FadeAnimation selectionAnimation = new FadeAnimation(10f);
 	private boolean selected;
 	private boolean hovered;
 	private Consumer<GuiSidebarItem> onSelect;
@@ -70,23 +71,33 @@ public class GuiSidebarItem extends GuiComponent {
 	@Override
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
 		var theme = ThemeManager.get();
-		int hoverColor = ColorUtil.withAlpha(theme.sidebarItemHover(), hoverAnimation.getValue() * 0.85f);
-		int selectedColor = ColorUtil.withAlpha(theme.sidebarItemSelected(), selectionAnimation.getValue() * 0.95f);
+		float selection = selectionAnimation.getValue();
+		float hover = hoverAnimation.getValue();
 
-		if (hoverAnimation.getValue() > 0f) {
+		if (selection > 0f) {
+			int selectedColor = ColorUtil.withAlpha(theme.sidebarItemSelected(), selection * 0.95f);
+			RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, selectedColor);
+		} else if (hover > 0f) {
+			int hoverColor = ColorUtil.withAlpha(theme.sidebarItemHover(), hover * 0.75f);
 			RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, hoverColor);
 		}
-		if (selectionAnimation.getValue() > 0f) {
-			RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, selectedColor);
+
+		if (selection > 0f) {
+			int accentHeight = Math.max(12, height - Spacing.MD * 2);
+			int accentY = y + (height - accentHeight) / 2;
+			int accentColor = ColorUtil.withAlpha(theme.sidebarAccentIndicator(), selection);
+			RoundedRenderer.fill(context, x + Spacing.SM, accentY, ACCENT_WIDTH, accentHeight, ACCENT_WIDTH, accentColor);
 		}
 
-		int iconX = x + Spacing.MD;
+		int iconX = x + Spacing.LG;
 		int iconY = y + (height - ICON_SIZE) / 2;
-		int iconColor = enabled ? theme.logoAccent() : theme.sidebarItemTextMuted();
+		int iconColor = enabled
+				? ColorUtil.lerp(theme.sidebarItemTextMuted(), theme.sidebarAccentIndicator(), selection)
+				: theme.sidebarItemTextMuted();
 		RoundedRenderer.fill(context, iconX, iconY, ICON_SIZE, ICON_SIZE, ICON_SIZE / 2, iconColor);
 
 		int textColor = enabled
-				? (selected ? theme.textPrimary() : theme.sidebarItemText())
+				? ColorUtil.lerp(theme.sidebarItemText(), theme.textPrimary(), selection * 0.65f)
 				: theme.sidebarItemTextMuted();
 		context.text(font, label, iconX + ICON_SIZE + Spacing.SM, y + (height - font.lineHeight) / 2, textColor, false);
 	}
