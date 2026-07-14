@@ -1,6 +1,7 @@
 package dev.cronis.spotify;
 
 import dev.cronis.Cronis;
+import dev.cronis.spotify.os.OsMediaPlaybackProvider;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -28,7 +29,7 @@ final class SpotifyManager {
 	private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor(new SpotifyThreadFactory());
 	private final SpotifyStateBroadcaster broadcaster;
 
-	private volatile SpotifyPlaybackProvider provider = SpotifyPlaybackProvider.unavailable();
+	private volatile SpotifyPlaybackProvider provider = OsMediaPlaybackProvider.get();
 	private volatile ScheduledFuture<?> scheduledPoll;
 	private volatile boolean running;
 
@@ -62,6 +63,7 @@ final class SpotifyManager {
 		}
 
 		running = true;
+		provider.onManagerStarted();
 		schedulePoll(0L);
 		Cronis.LOGGER.debug("Spotify manager started.");
 	}
@@ -73,6 +75,7 @@ final class SpotifyManager {
 
 		running = false;
 		cancelScheduledPoll();
+		provider.onManagerStopped();
 		session.reset();
 		applySnapshot(SpotifySnapshot.empty(), true);
 		Cronis.LOGGER.debug("Spotify manager stopped.");

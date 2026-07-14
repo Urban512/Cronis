@@ -1,6 +1,7 @@
 package dev.cronis.widget;
 
 import dev.cronis.Cronis;
+import dev.cronis.settings.SettingGroup;
 
 import java.util.Objects;
 
@@ -20,6 +21,7 @@ public abstract class Widget {
 	private int height;
 	private boolean visible = true;
 	private boolean enabled = true;
+	private SettingGroup settingsGroup;
 
 	protected Widget(String id, String displayName, WidgetCategory category) {
 		this.id = Objects.requireNonNull(id, "id");
@@ -49,6 +51,35 @@ public abstract class Widget {
 
 	public void setAnchor(WidgetAnchor anchor) {
 		this.anchor = Objects.requireNonNull(anchor, "anchor");
+	}
+
+	/**
+	 * Changes the anchor while preserving the widget's current screen-space bounds.
+	 *
+	 * @param newAnchor    target anchor
+	 * @param screenWidth  scaled viewport width
+	 * @param screenHeight scaled viewport height
+	 */
+	public void setAnchorPreservingScreenPosition(WidgetAnchor newAnchor, int screenWidth, int screenHeight) {
+		Objects.requireNonNull(newAnchor, "newAnchor");
+		if (newAnchor == anchor) {
+			return;
+		}
+
+		WidgetBounds screenBounds = anchor.resolve(screenWidth, screenHeight, position, width, height);
+		setAnchor(newAnchor);
+		setPosition(newAnchor.positionFromBounds(screenWidth, screenHeight, screenBounds, width, height));
+	}
+
+	/**
+	 * Changes the anchor while preserving the widget's current screen-space bounds.
+	 *
+	 * @param newAnchor target anchor
+	 * @param context   viewport context used for layout resolution
+	 */
+	public void setAnchorPreservingScreenPosition(WidgetAnchor newAnchor, WidgetContext context) {
+		Objects.requireNonNull(context, "context");
+		setAnchorPreservingScreenPosition(newAnchor, context.screenWidth(), context.screenHeight());
 	}
 
 	public WidgetPosition getPosition() {
@@ -123,6 +154,45 @@ public abstract class Widget {
 	 * @return preferred size
 	 */
 	public abstract WidgetSize getPreferredSize();
+
+	/**
+	 * Returns the settings exposed by this widget for the HUD editor inspector.
+	 * <p>
+	 * The default implementation returns an empty group. Override
+	 * {@link #buildSettingsGroup()} to register widget-specific settings.
+	 *
+	 * @return widget settings group
+	 */
+	public SettingGroup getSettings() {
+		if (settingsGroup == null) {
+			settingsGroup = buildSettingsGroup();
+		}
+		return settingsGroup;
+	}
+
+	/**
+	 * Creates the settings group for this widget.
+	 * <p>
+	 * Subclasses may override to register additional settings. The returned group
+	 * must not duplicate layout state already managed by the widget API.
+	 *
+	 * @return settings group
+	 */
+	protected SettingGroup buildSettingsGroup() {
+		return new SettingGroup(getId() + ".settings", "Settings", "");
+	}
+
+	/**
+	 * Returns the smallest size that can display the widget without clipping content.
+	 * <p>
+	 * The default implementation matches {@link #getPreferredSize()}. Override only
+	 * when the minimum layout differs from the preferred default.
+	 *
+	 * @return minimum size
+	 */
+	public WidgetSize getMinimumSize() {
+		return getPreferredSize();
+	}
 
 	/**
 	 * Called when the widget is registered with the {@link WidgetManager}.

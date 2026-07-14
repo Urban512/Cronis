@@ -23,6 +23,8 @@ public class GuiApplicationWindow extends GuiWindow {
 		addChild(contentPanel);
 		openAnimation.setImmediate(0f);
 		openAnimation.setTarget(1f);
+
+		sidebar.setSelectionListener(item -> contentPanel.showCategory(item.getLabel()));
 	}
 
 	@Override

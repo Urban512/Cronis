@@ -3,6 +3,10 @@ plugins {
 	id 'maven-publish'
 }
 
+import org.gradle.internal.jvm.Jvm
+
+def isWindowsHost = System.getProperty('os.name', '').toLowerCase().contains('windows')
+
 version = project.mod_version
 group = project.maven_group
 
@@ -40,6 +44,64 @@ processResources {
 
 	filesMatching("fabric.mod.json") {
 		expand "version": version
+	}
+
+	if (isWindowsHost) {
+		def nativeOutputDir = layout.buildDirectory.dir('native-output').get().asFile
+		if (nativeOutputDir.exists()) {
+			from(nativeOutputDir) {
+				include '**/*'
+			}
+		}
+	}
+}
+
+def windowsSmtcBuildDir = layout.projectDirectory.dir('native/windows/smtc/build').asFile
+def windowsSmtcOutputDir = layout.buildDirectory.dir('native-output/natives/windows-amd64').get().asFile
+
+tasks.register('configureWindowsSmtcNative', Exec) {
+	onlyIf { isWindowsHost && hasCmakeTool() }
+	workingDir layout.projectDirectory.dir('native/windows/smtc').asFile
+	commandLine 'cmake',
+			'-B', 'build',
+			'-DCMAKE_BUILD_TYPE=Release',
+			"-DJAVA_HOME=${Jvm.current().javaHome.absolutePath}"
+}
+
+tasks.register('buildWindowsSmtcNative', Exec) {
+	onlyIf { isWindowsHost && hasCmakeTool() }
+	dependsOn configureWindowsSmtcNative
+	workingDir layout.projectDirectory.dir('native/windows/smtc').asFile
+	commandLine 'cmake', '--build', 'build', '--config', 'Release'
+
+	doLast {
+		def releaseLibrary = new File(windowsSmtcBuildDir, 'Release/cronis_smtc.dll')
+		def singleConfigLibrary = new File(windowsSmtcBuildDir, 'cronis_smtc.dll')
+		def sourceLibrary = releaseLibrary.exists() ? releaseLibrary : singleConfigLibrary
+		if (!sourceLibrary.exists()) {
+			throw new GradleException("Windows SMTC native library was not produced at ${sourceLibrary}")
+		}
+
+		windowsSmtcOutputDir.mkdirs()
+		project.copy {
+			from sourceLibrary
+			into windowsSmtcOutputDir
+		}
+	}
+}
+
+boolean hasCmakeTool() {
+	try {
+		def stdout = new ByteArrayOutputStream()
+		def result = project.exec {
+			commandLine 'cmake', '--version'
+			standardOutput = stdout
+			ignoreExitValue = true
+		}
+		return result.exitValue == 0
+	} catch (Exception ignored) {
+		logger.lifecycle('CMake not found. Skipping Windows SMTC native build; PowerShell fallback will be used at runtime.')
+		return false
 	}
 }
 

@@ -1,6 +1,9 @@
 package dev.cronis.widget;
 
 import dev.cronis.Cronis;
+import dev.cronis.settings.Setting;
+import dev.cronis.widget.persistence.WidgetLayoutStorage;
+import dev.cronis.widget.persistence.WidgetSettingsStorage;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -16,11 +19,14 @@ import java.util.Optional;
  * Central registry and lifecycle coordinator for Cronis HUD widgets.
  */
 public final class WidgetManager {
-	private static final WidgetManager INSTANCE = new WidgetManager();
 	private static final Path STORAGE_PATH = Path.of("config", "cronis", "widgets.json");
+	private static final Path SETTINGS_STORAGE_PATH = Path.of("config", "cronis", "widget-settings.json");
+	private static final WidgetManager INSTANCE = new WidgetManager();
 
 	private final Map<String, Widget> widgets = new LinkedHashMap<>();
 	private final WidgetRenderer renderer = new WidgetRenderer();
+	private final WidgetLayoutStorage layoutStorage = new WidgetLayoutStorage(STORAGE_PATH);
+	private final WidgetSettingsStorage settingsStorage = new WidgetSettingsStorage(SETTINGS_STORAGE_PATH);
 
 	private WidgetManager() {
 	}
@@ -46,6 +52,13 @@ public final class WidgetManager {
 		if (existing != null) {
 			throw new IllegalArgumentException("Widget already registered: " + widget.getId());
 		}
+
+		if (layoutStorage.restoreLayout(widget)) {
+			Cronis.LOGGER.debug("Restored saved layout for widget: {}", widget.getId());
+		}
+
+		settingsStorage.restoreSettings(widget);
+		wireSettingsPersistence(widget);
 
 		widget.onRegistered();
 		Cronis.LOGGER.debug("Registered widget: {}", widget.getId());
@@ -155,27 +168,47 @@ public final class WidgetManager {
 	}
 
 	/**
-	 * Persists registered widget layout state.
+	 * Loads widget layout data from disk into memory.
 	 * <p>
-	 * Persistence is not implemented yet.
+	 * Should be called during client startup before widgets are registered.
 	 *
-	 * @return {@code false} until persistence is implemented
+	 * @return {@code true} when a readable layout document was loaded
 	 */
-	public boolean save() {
-		Cronis.LOGGER.debug("Widget persistence is not implemented yet: {}", STORAGE_PATH);
-		return false;
+	public boolean load() {
+		boolean layoutLoaded = layoutStorage.load();
+		boolean settingsLoaded = settingsStorage.load();
+		return layoutLoaded || settingsLoaded;
 	}
 
 	/**
-	 * Restores registered widget layout state.
-	 * <p>
-	 * Persistence is not implemented yet.
+	 * Persists registered widget layout state to disk.
 	 *
-	 * @return {@code false} until persistence is implemented
+	 * @return {@code true} when data was written to disk
 	 */
-	public boolean load() {
-		Cronis.LOGGER.debug("Widget persistence is not implemented yet: {}", STORAGE_PATH);
-		return false;
+	public boolean save() {
+		return layoutStorage.save(getWidgets());
+	}
+
+	/**
+	 * Records a layout change for the provided widget and persists when needed.
+	 *
+	 * @param widget widget whose layout changed
+	 */
+	public void notifyLayoutChanged(Widget widget) {
+		Objects.requireNonNull(widget, "widget");
+		layoutStorage.recordLayoutChange(widget);
+		layoutStorage.saveIfDirty(getWidgets());
+	}
+
+	/**
+	 * Records a settings change for the provided widget and persists when needed.
+	 *
+	 * @param widget widget whose settings changed
+	 */
+	public void notifySettingsChanged(Widget widget) {
+		Objects.requireNonNull(widget, "widget");
+		settingsStorage.recordSettingsChange(widget);
+		settingsStorage.saveIfDirty(getWidgets());
 	}
 
 	/**
@@ -185,5 +218,11 @@ public final class WidgetManager {
 	 */
 	public Path storagePath() {
 		return STORAGE_PATH;
+	}
+
+	private void wireSettingsPersistence(Widget widget) {
+		for (Setting<?> setting : widget.getSettings().flattenSettings().values()) {
+			setting.addChangeListener((changedSetting, oldValue, newValue) -> notifySettingsChanged(widget));
+		}
 	}
 }

@@ -17,11 +17,11 @@ public final class WidgetRenderer {
 			return;
 		}
 
-		WidgetBounds bounds = context.widgetBounds();
+		WidgetBounds bounds = widget.resolveBounds(context);
 		if (!bounds.intersectsViewport(context.screenWidth(), context.screenHeight())) {
 			return;
 		}
 
-		widget.render(context);
+		widget.render(context.withWidgetBounds(bounds));
 	}
 }

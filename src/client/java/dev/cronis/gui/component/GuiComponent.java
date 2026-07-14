@@ -2,6 +2,7 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.focus.FocusManager;
 import dev.cronis.gui.focus.Focusable;
+import dev.cronis.gui.overlay.GuiOverlayManager;
 import dev.cronis.gui.util.GuiBounds;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -27,6 +28,7 @@ public abstract class GuiComponent {
 	protected boolean enabled = true;
 	protected GuiComponent parent;
 	private FocusManager focusManager;
+	private GuiOverlayManager overlayManager;
 
 	protected GuiComponent() {
 	}
@@ -35,10 +37,21 @@ public abstract class GuiComponent {
 		children.add(Objects.requireNonNull(child, "child"));
 		child.parent = this;
 		child.inheritFocusManager();
+		child.inheritOverlayManager();
 	}
 
 	public List<GuiComponent> getChildren() {
 		return Collections.unmodifiableList(children);
+	}
+
+	/**
+	 * Removes every child from this component.
+	 */
+	public void clearChildren() {
+		for (GuiComponent child : children) {
+			child.parent = null;
+		}
+		children.clear();
 	}
 
 	public GuiBounds getBounds() {
@@ -84,6 +97,23 @@ public abstract class GuiComponent {
 	public void setFocusManager(FocusManager focusManager) {
 		this.focusManager = focusManager;
 		inheritFocusManager();
+	}
+
+	/**
+	 * Assigns the overlay manager used by this component subtree.
+	 *
+	 * @param overlayManager overlay manager
+	 */
+	public void setOverlayManager(GuiOverlayManager overlayManager) {
+		this.overlayManager = overlayManager;
+		inheritOverlayManager();
+	}
+
+	protected GuiOverlayManager getOverlayManager() {
+		if (overlayManager != null) {
+			return overlayManager;
+		}
+		return parent != null ? parent.getOverlayManager() : null;
 	}
 
 	protected FocusManager getFocusManager() {
@@ -236,6 +266,16 @@ public abstract class GuiComponent {
 
 		for (GuiComponent child : children) {
 			child.setFocusManager(focusManager);
+		}
+	}
+
+	private void inheritOverlayManager() {
+		if (overlayManager == null) {
+			return;
+		}
+
+		for (GuiComponent child : children) {
+			child.setOverlayManager(overlayManager);
 		}
 	}
 }

@@ -5,6 +5,8 @@ package dev.cronis.settings;
  */
 public final class StringSetting extends Setting<String> {
 	private final int maxLength;
+	private boolean editing;
+	private String draftValue;
 
 	/**
 	 * Creates an unbounded string setting.
@@ -47,6 +49,79 @@ public final class StringSetting extends Setting<String> {
 	 */
 	public int getMaxLength() {
 		return maxLength;
+	}
+
+	/**
+	 * Returns whether this setting currently has an in-progress edit session.
+	 *
+	 * @return {@code true} while a text field is actively editing
+	 */
+	public boolean isEditing() {
+		return editing;
+	}
+
+	/**
+	 * Begins a draft edit session for live preview without committing.
+	 */
+	public void beginEditing() {
+		editing = true;
+		draftValue = getValue();
+	}
+
+	/**
+	 * Updates the in-progress draft value shown while editing.
+	 *
+	 * @param draft current field text
+	 */
+	public void updateDraft(String draft) {
+		if (!editing) {
+			beginEditing();
+		}
+		this.draftValue = draft == null ? "" : draft;
+	}
+
+	/**
+	 * Commits the edited value, restoring the default when blank.
+	 *
+	 * @param draft final field text
+	 * @return {@code true} when the value was accepted
+	 */
+	public boolean commitDraft(String draft) {
+		editing = false;
+		draftValue = null;
+		return trySetValue(normalizeCommittedValue(draft));
+	}
+
+	/**
+	 * Discards the current draft without changing the committed value.
+	 */
+	public void cancelEditing() {
+		editing = false;
+		draftValue = null;
+	}
+
+	/**
+	 * Returns the value that should be displayed by consumers while editing or committed.
+	 * <p>
+	 * During editing, the live draft is returned as-is, including empty text. After commit,
+	 * blank persisted values fall back to the default.
+	 *
+	 * @return active display value
+	 */
+	public String getActiveValue() {
+		if (editing) {
+			return draftValue == null ? "" : draftValue;
+		}
+
+		String value = getValue();
+		return value.isBlank() ? getDefaultValue() : value;
+	}
+
+	private String normalizeCommittedValue(String draft) {
+		if (draft == null || draft.isBlank()) {
+			return getDefaultValue();
+		}
+		return draft;
 	}
 
 	@Override

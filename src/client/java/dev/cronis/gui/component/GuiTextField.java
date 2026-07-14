@@ -31,6 +31,9 @@ public class GuiTextField extends GuiComponent implements Focusable {
 	private boolean focused;
 	private int cursorBlink;
 	private Consumer<String> onChange;
+	private Consumer<String> onCommit;
+	private Runnable onEditBegin;
+	private Runnable onEditCancel;
 
 	public GuiTextField(String placeholder) {
 		this(placeholder, 128);
@@ -47,15 +50,43 @@ public class GuiTextField extends GuiComponent implements Focusable {
 	}
 
 	public void setText(String value) {
+		applyCommittedValue(value);
+		notifyChange();
+	}
+
+	/**
+	 * Replaces the visible text without notifying change listeners.
+	 *
+	 * @param value committed value to display
+	 */
+	public void applyCommittedValue(String value) {
 		text.setLength(0);
 		if (value != null) {
 			text.append(truncate(value));
 		}
-		notifyChange();
+	}
+
+	public boolean isFocused() {
+		return focused;
 	}
 
 	public GuiTextField setOnChange(Consumer<String> onChange) {
 		this.onChange = onChange;
+		return this;
+	}
+
+	public GuiTextField setOnCommit(Consumer<String> onCommit) {
+		this.onCommit = onCommit;
+		return this;
+	}
+
+	public GuiTextField setOnEditBegin(Runnable onEditBegin) {
+		this.onEditBegin = onEditBegin;
+		return this;
+	}
+
+	public GuiTextField setOnEditCancel(Runnable onEditCancel) {
+		this.onEditCancel = onEditCancel;
 		return this;
 	}
 
@@ -91,11 +122,19 @@ public class GuiTextField extends GuiComponent implements Focusable {
 	public void onFocusGained() {
 		focused = true;
 		cursorBlink = 0;
+		if (onEditBegin != null) {
+			onEditBegin.run();
+		}
 	}
 
 	@Override
 	public void onFocusLost() {
+		if (!focused) {
+			return;
+		}
+
 		focused = false;
+		commitEdit();
 	}
 
 	@Override
@@ -109,7 +148,12 @@ public class GuiTextField extends GuiComponent implements Focusable {
 			notifyChange();
 			return true;
 		}
-		if (event.key() == GLFW.GLFW_KEY_ENTER || event.key() == GLFW.GLFW_KEY_ESCAPE) {
+		if (event.key() == GLFW.GLFW_KEY_ENTER) {
+			clearFocus();
+			return true;
+		}
+		if (event.key() == GLFW.GLFW_KEY_ESCAPE) {
+			cancelEdit();
 			clearFocus();
 			return true;
 		}
@@ -175,6 +219,18 @@ public class GuiTextField extends GuiComponent implements Focusable {
 	private void notifyChange() {
 		if (onChange != null) {
 			onChange.accept(text.toString());
+		}
+	}
+
+	private void commitEdit() {
+		if (onCommit != null) {
+			onCommit.accept(text.toString());
+		}
+	}
+
+	private void cancelEdit() {
+		if (onEditCancel != null) {
+			onEditCancel.run();
 		}
 	}
 }

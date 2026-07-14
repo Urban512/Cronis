@@ -30,8 +30,8 @@ public final class SpotifyService {
 	/**
 	 * Starts background polling when a provider is configured.
 	 * <p>
-	 * Until authentication and HTTP transport are implemented, the default
-	 * provider reports a disconnected session without performing network I/O.
+	 * The default provider reads playback state from operating-system media
+	 * transport APIs without requiring Spotify authentication.
 	 */
 	public void start() {
 		manager.start();

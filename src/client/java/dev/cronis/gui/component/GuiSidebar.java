@@ -25,7 +25,7 @@ public class GuiSidebar extends GuiComponent {
 	private static final String VERSION_LABEL = "Cronis v1.0.0";
 
 	private static final String[] CATEGORIES = {
-			"General", "HUD", "Modules", "SkyBlock", "Dungeon",
+			"General", "HUD", "Spotify", "Modules", "SkyBlock", "Dungeon",
 			"Mining", "Fishing", "Garden", "Combat", "Profiles", "Developer"
 	};
 

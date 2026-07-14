@@ -20,20 +20,27 @@ public class CronisScreen extends GuiScreen {
 		window.centerOnScreen(this.width, this.height);
 		window.update(delta, mouseX, mouseY);
 		window.render(context, this.font);
+		renderOverlays(context, this.font, delta, mouseX, mouseY);
 	}
 
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-		return window.mouseClicked(event.x(), event.y(), event.button()) || super.mouseClicked(event, doubleClick);
+		return dispatchOverlayMouseClicked(event.x(), event.y(), event.button())
+				|| window.mouseClicked(event.x(), event.y(), event.button())
+				|| super.mouseClicked(event, doubleClick);
 	}
 
 	@Override
 	public boolean mouseReleased(MouseButtonEvent event) {
-		return window.mouseReleased(event.x(), event.y(), event.button()) || super.mouseReleased(event);
+		return dispatchOverlayMouseReleased(event.x(), event.y(), event.button())
+				|| window.mouseReleased(event.x(), event.y(), event.button())
+				|| super.mouseReleased(event);
 	}
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-		return window.mouseScrolled(mouseX, mouseY, scrollX, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
+		return dispatchOverlayMouseScrolled(mouseX, mouseY, scrollX, scrollY)
+				|| window.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
+				|| super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 }

@@ -10,7 +10,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Non-interactive text display component.
  */
 public class GuiLabel extends GuiComponent {
-	private final String text;
+	private String text;
 	private final int color;
 	private final RenderUtil.TextAlignment alignment;
 	private final boolean shadow;
@@ -46,6 +46,15 @@ public class GuiLabel extends GuiComponent {
 
 	public static GuiLabel heading(String text) {
 		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, true);
+	}
+
+	/**
+	 * Updates the displayed label text.
+	 *
+	 * @param text new label text
+	 */
+	public void setText(String text) {
+		this.text = text;
 	}
 
 	@Override

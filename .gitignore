@@ -32,6 +32,11 @@ bin/
 
 run/
 
+# native
+
+native/windows/smtc/build/
+build/native-output/
+
 # java
 
 hs_err_*.log

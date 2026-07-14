@@ -68,4 +68,50 @@ public enum WidgetAnchor {
 			);
 		};
 	}
+
+	/**
+	 * Converts resolved screen-space bounds back into persistent anchor offsets.
+	 *
+	 * @param screenWidth  scaled viewport width
+	 * @param screenHeight scaled viewport height
+	 * @param bounds       resolved widget bounds
+	 * @param width        widget width
+	 * @param height       widget height
+	 * @return persistent position offsets for this anchor
+	 */
+	public WidgetPosition positionFromBounds(
+			int screenWidth,
+			int screenHeight,
+			WidgetBounds bounds,
+			int width,
+			int height
+	) {
+		return switch (this) {
+			case TOP_LEFT -> new WidgetPosition(bounds.x(), bounds.y());
+			case TOP_CENTER -> new WidgetPosition(
+					bounds.x() - RenderUtil.centerX(screenWidth, width),
+					bounds.y()
+			);
+			case TOP_RIGHT -> new WidgetPosition(
+					screenWidth - width - bounds.x(),
+					bounds.y()
+			);
+			case CENTER -> new WidgetPosition(
+					bounds.x() - RenderUtil.centerX(screenWidth, width),
+					bounds.y() - RenderUtil.centerY(screenHeight, height)
+			);
+			case BOTTOM_LEFT -> new WidgetPosition(
+					bounds.x(),
+					screenHeight - height - bounds.y()
+			);
+			case BOTTOM_CENTER -> new WidgetPosition(
+					bounds.x() - RenderUtil.centerX(screenWidth, width),
+					screenHeight - height - bounds.y()
+			);
+			case BOTTOM_RIGHT -> new WidgetPosition(
+					screenWidth - width - bounds.x(),
+					screenHeight - height - bounds.y()
+			);
+		};
+	}
 }
