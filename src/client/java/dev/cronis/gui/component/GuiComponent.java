@@ -1,6 +1,10 @@
 package dev.cronis.gui.component;
 
+import dev.cronis.gui.focus.FocusManager;
+import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.util.GuiBounds;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -21,6 +25,8 @@ public abstract class GuiComponent {
 	protected int height;
 	protected boolean visible = true;
 	protected boolean enabled = true;
+	protected GuiComponent parent;
+	private FocusManager focusManager;
 
 	protected GuiComponent() {
 	}
@@ -28,13 +34,12 @@ public abstract class GuiComponent {
 	public void addChild(GuiComponent child) {
 		children.add(Objects.requireNonNull(child, "child"));
 		child.parent = this;
+		child.inheritFocusManager();
 	}
 
 	public List<GuiComponent> getChildren() {
 		return Collections.unmodifiableList(children);
 	}
-
-	protected GuiComponent parent;
 
 	public GuiBounds getBounds() {
 		return new GuiBounds(x, y, width, height);
@@ -69,6 +74,37 @@ public abstract class GuiComponent {
 
 	public int getPreferredWidth(int availableHeight) {
 		return width;
+	}
+
+	/**
+	 * Assigns the focus manager used by this component subtree.
+	 *
+	 * @param focusManager focus manager
+	 */
+	public void setFocusManager(FocusManager focusManager) {
+		this.focusManager = focusManager;
+		inheritFocusManager();
+	}
+
+	protected FocusManager getFocusManager() {
+		if (focusManager != null) {
+			return focusManager;
+		}
+		return parent != null ? parent.getFocusManager() : null;
+	}
+
+	protected void requestFocus(Focusable focusable) {
+		FocusManager manager = getFocusManager();
+		if (manager != null) {
+			manager.requestFocus(focusable);
+		}
+	}
+
+	protected void clearFocus() {
+		FocusManager manager = getFocusManager();
+		if (manager != null) {
+			manager.clearFocus();
+		}
 	}
 
 	protected boolean contains(int mouseX, int mouseY) {
@@ -110,7 +146,25 @@ public abstract class GuiComponent {
 			}
 		}
 
-		return handleMouseClicked(mouseX, mouseY, button);
+		boolean handled = handleMouseClicked(mouseX, mouseY, button);
+		if (!handled) {
+			clearFocus();
+		}
+		return handled;
+	}
+
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		if (!visible) {
+			return false;
+		}
+
+		for (int index = children.size() - 1; index >= 0; index--) {
+			if (children.get(index).mouseReleased(mouseX, mouseY, button)) {
+				return true;
+			}
+		}
+
+		return handleMouseReleased(mouseX, mouseY, button);
 	}
 
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
@@ -127,11 +181,61 @@ public abstract class GuiComponent {
 		return handleMouseScrolled(mouseX, mouseY, scrollX, scrollY);
 	}
 
+	public boolean keyPressed(KeyEvent event) {
+		if (!visible || !enabled) {
+			return false;
+		}
+
+		for (int index = children.size() - 1; index >= 0; index--) {
+			if (children.get(index).keyPressed(event)) {
+				return true;
+			}
+		}
+
+		return handleKeyPressed(event);
+	}
+
+	public boolean charTyped(CharacterEvent event) {
+		if (!visible || !enabled) {
+			return false;
+		}
+
+		for (int index = children.size() - 1; index >= 0; index--) {
+			if (children.get(index).charTyped(event)) {
+				return true;
+			}
+		}
+
+		return handleCharTyped(event);
+	}
+
 	protected boolean handleMouseClicked(double mouseX, double mouseY, int button) {
+		return false;
+	}
+
+	protected boolean handleMouseReleased(double mouseX, double mouseY, int button) {
 		return false;
 	}
 
 	protected boolean handleMouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		return false;
+	}
+
+	protected boolean handleKeyPressed(KeyEvent event) {
+		return false;
+	}
+
+	protected boolean handleCharTyped(CharacterEvent event) {
+		return false;
+	}
+
+	private void inheritFocusManager() {
+		if (focusManager == null) {
+			return;
+		}
+
+		for (GuiComponent child : children) {
+			child.setFocusManager(focusManager);
+		}
 	}
 }

@@ -10,6 +10,10 @@ import net.minecraft.client.input.MouseButtonEvent;
 public class CronisScreen extends GuiScreen {
 	private final GuiApplicationWindow window = new GuiApplicationWindow();
 
+	public CronisScreen() {
+		attachFocusManager(window);
+	}
+
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor context, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(context, mouseX, mouseY, delta);
@@ -21,6 +25,11 @@ public class CronisScreen extends GuiScreen {
 	@Override
 	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		return window.mouseClicked(event.x(), event.y(), event.button()) || super.mouseClicked(event, doubleClick);
+	}
+
+	@Override
+	public boolean mouseReleased(MouseButtonEvent event) {
+		return window.mouseReleased(event.x(), event.y(), event.button()) || super.mouseReleased(event);
 	}
 
 	@Override

@@ -82,6 +82,13 @@ public class GuiApplicationWindow extends GuiWindow {
 	}
 
 	@Override
+	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+		return header.mouseReleased(mouseX, mouseY, button)
+				|| sidebar.mouseReleased(mouseX, mouseY, button)
+				|| contentPanel.mouseReleased(mouseX, mouseY, button);
+	}
+
+	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
 		return sidebar.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
 				|| contentPanel.mouseScrolled(mouseX, mouseY, scrollX, scrollY);

@@ -5,39 +5,6 @@ package dev.cronis.gui.theme;
  * <p>
  * Every color consumed by components must originate from a theme so future
  * community themes can recolor the entire product without code changes.
- *
- * @param windowBackground        primary application window surface
- * @param windowBorder            subtle window outline
- * @param sidebarBackground       sidebar panel surface
- * @param sidebarItemHover        sidebar item hover overlay
- * @param sidebarItemSelected     sidebar item selected surface
- * @param sidebarItemText         primary sidebar label color
- * @param sidebarItemTextMuted    muted sidebar label color
- * @param sidebarAccentIndicator  accent bar shown on selected sidebar items
- * @param headerBackground        top header bar surface
- * @param headerDivider           separator between header and body
- * @param contentBackground       main content panel surface
- * @param cardBackground          card surface color
- * @param cardBorder              card outline color
- * @param cardHoverBorder         card outline color when hovered
- * @param textPrimary             primary body text
- * @param textSecondary           secondary descriptive text
- * @param textMuted               de-emphasized text
- * @param accent                  primary accent color
- * @param accentHover             accent color on hover
- * @param searchBackground        search field background
- * @param searchBorder            search field border
- * @param searchBorderFocused     search field border when focused
- * @param searchPlaceholder       search placeholder text
- * @param iconDefault             default icon color
- * @param iconHover               icon hover color
- * @param shadow                  drop shadow tint
- * @param cardShadow              subtle card elevation shadow
- * @param logoAccent              accent used for branding elements
- * @param scrollbarTrack          scrollbar track surface
- * @param scrollbarThumb          scrollbar thumb color
- * @param scrollbarThumbHover     scrollbar thumb color when hovered
- * @param overlayFade             edge fade overlay matching the content surface
  */
 public record GuiTheme(
 		int windowBackground,
@@ -71,7 +38,34 @@ public record GuiTheme(
 		int scrollbarTrack,
 		int scrollbarThumb,
 		int scrollbarThumbHover,
-		int overlayFade
+		int overlayFade,
+		int controlBackground,
+		int controlBorder,
+		int controlBorderFocused,
+		int controlHover,
+		int controlDisabled,
+		int toggleTrack,
+		int toggleTrackActive,
+		int toggleThumb,
+		int sliderTrack,
+		int sliderFill,
+		int sliderThumb,
+		int checkboxBackground,
+		int checkboxBorder,
+		int checkboxMark,
+		int dropdownBackground,
+		int dropdownItemHover,
+		int dropdownMenuBorder,
+		int modalOverlay,
+		int modalBackground,
+		int modalBorder,
+		int tooltipBackground,
+		int tooltipBorder,
+		int divider,
+		int buttonBackground,
+		int buttonBackgroundHover,
+		int buttonBorder,
+		int buttonText
 ) {
 	/**
 	 * Returns the default Cronis dark theme.
@@ -111,7 +105,34 @@ public record GuiTheme(
 				0x00000000,
 				0xFF3D3F4D,
 				0xFF5A5D6E,
-				0xFF17181F
+				0xFF17181F,
+				0xFF1C1D26,
+				0xFF2B2D38,
+				0xFF8B5CF6,
+				0xFF22252F,
+				0xFF4B5563,
+				0xFF2B2D38,
+				0xFF8B5CF6,
+				0xFFE8ECF2,
+				0xFF2B2D38,
+				0xFF8B5CF6,
+				0xFFFFFFFF,
+				0xFF1C1D26,
+				0xFF2B2D38,
+				0xFFFFFFFF,
+				0xFF20212A,
+				0xFF22252F,
+				0xFF2B2D38,
+				0xB0000000,
+				0xFF20212A,
+				0xFF2B2D38,
+				0xFF1E2129,
+				0xFF2B2D38,
+				0xFF2B2D38,
+				0xFF252830,
+				0xFF2B2D38,
+				0xFF2E3038,
+				0xFFF0F3F8
 		);
 	}
 }
