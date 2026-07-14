@@ -104,12 +104,36 @@ public final class WidgetManager {
 	}
 
 	/**
-	 * Updates all visible, enabled widgets.
+	 * Updates all visible, enabled widgets within the viewport.
 	 *
 	 * @param context viewport context
 	 */
 	public void update(WidgetContext context) {
 		Objects.requireNonNull(context, "context");
+		forEachInViewport(context, Widget::update);
+	}
+
+	/**
+	 * Renders all visible, enabled widgets within the viewport in registration order.
+	 *
+	 * @param context viewport context
+	 */
+	public void render(WidgetContext context) {
+		Objects.requireNonNull(context, "context");
+		forEachInViewport(context, this::renderInViewport);
+	}
+
+	private void renderInViewport(Widget widget, WidgetContext context) {
+		renderer.render(widget, context);
+	}
+
+	private void forEachInViewport(WidgetContext context, WidgetPass pass) {
+		if (widgets.isEmpty()) {
+			return;
+		}
+
+		int screenWidth = context.screenWidth();
+		int screenHeight = context.screenHeight();
 
 		for (Widget widget : widgets.values()) {
 			if (!widget.isVisible() || !widget.isEnabled()) {
@@ -117,30 +141,17 @@ public final class WidgetManager {
 			}
 
 			WidgetBounds bounds = widget.resolveBounds(context);
-			if (!bounds.intersectsViewport(context.screenWidth(), context.screenHeight())) {
+			if (!bounds.intersectsViewport(screenWidth, screenHeight)) {
 				continue;
 			}
 
-			widget.update(context.withWidgetBounds(bounds));
+			pass.accept(widget, context.withWidgetBounds(bounds));
 		}
 	}
 
-	/**
-	 * Renders all visible widgets in registration order.
-	 *
-	 * @param context viewport context
-	 */
-	public void render(WidgetContext context) {
-		Objects.requireNonNull(context, "context");
-
-		for (Widget widget : widgets.values()) {
-			if (!widget.isVisible()) {
-				continue;
-			}
-
-			WidgetBounds bounds = widget.resolveBounds(context);
-			renderer.render(widget, context.withWidgetBounds(bounds));
-		}
+	@FunctionalInterface
+	private interface WidgetPass {
+		void accept(Widget widget, WidgetContext context);
 	}
 
 	/**
