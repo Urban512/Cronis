@@ -1,10 +1,12 @@
 package dev.cronis.gui.screen;
 
-import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
-
-public class CronisScreen extends Screen {
+/**
+ * Primary entry screen for the Cronis interface.
+ * <p>
+ * Opened by the {@code /cronis} client command and hosts the root component tree
+ * once the GUI is implemented.
+ */
+public class CronisScreen extends GuiScreen {
 	public CronisScreen() {
-		super(Component.literal("Cronis"));
 	}
 }
