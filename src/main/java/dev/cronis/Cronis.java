@@ -21,7 +21,7 @@ public class Cronis implements ModInitializer {
 		// However, some things (like resources) may still be uninitialized.
 		// Proceed with mild caution.
 
-		LOGGER.info("Starting Cronis...");
+		LOGGER.info("Cronis initialized.");
 	}
 
 	public static Identifier id(String path) {
