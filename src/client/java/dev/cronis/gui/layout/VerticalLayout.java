@@ -1,12 +1,57 @@
 package dev.cronis.gui.layout;
 
+import dev.cronis.gui.component.GuiComponent;
+import dev.cronis.gui.util.GuiBounds;
+
+import java.util.List;
+
 /**
  * Arranges child components in a single vertical column.
- * <p>
- * Vertical layout is the default structure for settings panels, lists, and stacked
- * sections within the Cronis interface.
  */
 public class VerticalLayout extends Layout {
-	public VerticalLayout() {
+	private final int spacing;
+
+	/**
+	 * Creates a vertical layout with the given spacing between children.
+	 *
+	 * @param spacing gap between siblings in pixels
+	 */
+	public VerticalLayout(int spacing) {
+		this.spacing = spacing;
+	}
+
+	@Override
+	public void layout(GuiBounds bounds, List<GuiComponent> children) {
+		int currentY = bounds.y();
+		for (GuiComponent child : children) {
+			if (!child.isVisible()) {
+				continue;
+			}
+
+			int childHeight = child.getPreferredHeight(bounds.width());
+			child.setBounds(bounds.x(), currentY, bounds.width(), childHeight);
+			currentY += childHeight + spacing;
+		}
+	}
+
+	@Override
+	public int preferredHeight(int width, List<GuiComponent> children) {
+		int totalHeight = 0;
+		int visibleCount = 0;
+
+		for (GuiComponent child : children) {
+			if (!child.isVisible()) {
+				continue;
+			}
+
+			totalHeight += child.getPreferredHeight(width);
+			visibleCount++;
+		}
+
+		if (visibleCount > 1) {
+			totalHeight += spacing * (visibleCount - 1);
+		}
+
+		return totalHeight;
 	}
 }

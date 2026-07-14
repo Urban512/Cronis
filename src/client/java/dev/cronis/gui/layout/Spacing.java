@@ -1,12 +1,15 @@
 package dev.cronis.gui.layout;
 
 /**
- * Describes the distance between sibling components within a layout.
- * <p>
- * Spacing values are shared across layouts to maintain consistent rhythm throughout
- * the Cronis interface.
+ * Shared spacing constants for Cronis layouts.
  */
-public class Spacing {
-	public Spacing() {
+public final class Spacing {
+	public static final int XS = 4;
+	public static final int SM = 8;
+	public static final int MD = 12;
+	public static final int LG = 16;
+	public static final int XL = 24;
+
+	private Spacing() {
 	}
 }

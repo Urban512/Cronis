@@ -1,25 +1,15 @@
 package dev.cronis.gui.component;
 
 import dev.cronis.gui.layout.Padding;
+import dev.cronis.gui.theme.GuiTheme;
+import dev.cronis.gui.theme.ThemeManager;
 
 /**
  * Immutable visual configuration for {@link GuiWindow}.
- *
- * @param backgroundColor window surface color in ARGB format
- * @param cornerRadius    corner radius in pixels
- * @param shadowRadius    shadow spread in pixels
- * @param shadowOpacity   maximum shadow opacity in the range {@code 0.0-1.0}
- * @param titleColor      title text color in ARGB format
- * @param padding         internal content padding
- * @param widthRatio      preferred width as a fraction of the available screen width
- * @param heightRatio     preferred height as a fraction of the available screen height
- * @param minWidth        minimum window width in pixels
- * @param minHeight       minimum window height in pixels
- * @param screenMargin    minimum margin kept between the window and the screen edge
- * @param blurBackground  whether the window surface requests blur through {@link dev.cronis.gui.render.BlurRenderer}
  */
 public record GuiWindowStyle(
 		int backgroundColor,
+		int borderColor,
 		int cornerRadius,
 		int shadowRadius,
 		float shadowOpacity,
@@ -32,27 +22,26 @@ public record GuiWindowStyle(
 		int screenMargin,
 		boolean blurBackground
 ) {
-	private static final int DEFAULT_BACKGROUND = 0xFF141820;
-	private static final int DEFAULT_TITLE = 0xFFF4F6FA;
-
 	/**
-	 * Returns the default Cronis window styling.
+	 * Returns the default Cronis application window styling.
 	 *
-	 * @return default style
+	 * @return default style derived from the active theme
 	 */
 	public static GuiWindowStyle defaults() {
+		GuiTheme theme = ThemeManager.get();
 		return new GuiWindowStyle(
-				DEFAULT_BACKGROUND,
-				10,
-				12,
-				0.42f,
-				DEFAULT_TITLE,
-				Padding.all(16),
-				0.55f,
-				0.62f,
-				280,
-				200,
-				24,
+				theme.windowBackground(),
+				theme.windowBorder(),
+				16,
+				14,
+				0.38f,
+				theme.textPrimary(),
+				Padding.all(0),
+				0.72f,
+				0.78f,
+				320,
+				240,
+				20,
 				false
 		);
 	}

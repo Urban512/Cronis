@@ -1,12 +1,10 @@
 package dev.cronis.gui.util;
 
 /**
- * Represents a position in GUI coordinate space.
- * <p>
- * Points are shared by layout, input handling, and rendering layers as neutral
- * spatial values.
+ * Immutable position in GUI coordinate space.
+ *
+ * @param x horizontal position in pixels
+ * @param y vertical position in pixels
  */
-public class GuiPoint {
-	public GuiPoint() {
-	}
+public record GuiPoint(int x, int y) {
 }
