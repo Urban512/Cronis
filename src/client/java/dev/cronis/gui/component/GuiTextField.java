@@ -3,8 +3,9 @@ package dev.cronis.gui.component;
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -18,8 +19,8 @@ import java.util.function.Consumer;
  * Single-line text input field.
  */
 public class GuiTextField extends GuiComponent implements Focusable {
-	private static final int CORNER_RADIUS = 10;
-	private static final int HEIGHT = 30;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
+	private static final int HEIGHT = GuiMetrics.HEIGHT_CONTROL;
 	private static final int PADDING_X = Spacing.MD;
 
 	private final String placeholder;
@@ -181,8 +182,7 @@ public class GuiTextField extends GuiComponent implements Focusable {
 		int background = ColorUtil.lerp(theme.controlBackground(), theme.controlHover(), hoverAnimation.getValue() * 0.35f);
 		int border = ColorUtil.lerp(theme.controlBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
 
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, border);
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
 
 		int textY = y + (height - font.lineHeight) / 2;
 		if (text.isEmpty()) {

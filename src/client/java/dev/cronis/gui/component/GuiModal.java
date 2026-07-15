@@ -2,10 +2,9 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.RenderUtil;
-import dev.cronis.gui.render.RoundedRenderer;
-import dev.cronis.gui.render.ShadowRenderer;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
@@ -19,7 +18,6 @@ import org.lwjgl.glfw.GLFW;
 public class GuiModal extends GuiComponent {
 	private static final int DIALOG_WIDTH = 360;
 	private static final int DIALOG_MIN_HEIGHT = 180;
-	private static final int CORNER_RADIUS = 14;
 	private static final int BUTTON_WIDTH = 96;
 
 	private final String title;
@@ -155,9 +153,17 @@ public class GuiModal extends GuiComponent {
 		int dialogBackground = ColorUtil.withAlpha(theme.modalBackground(), alpha);
 		int dialogBorder = ColorUtil.withAlpha(theme.modalBorder(), alpha);
 
-		ShadowRenderer.draw(context, dialogX, dialogY, DIALOG_WIDTH, dialogHeight, CORNER_RADIUS, 12, 0.35f * alpha, theme.shadow());
-		RoundedRenderer.fill(context, dialogX, dialogY, DIALOG_WIDTH, dialogHeight, CORNER_RADIUS, dialogBackground);
-		RoundedRenderer.outline(context, dialogX, dialogY, DIALOG_WIDTH, dialogHeight, CORNER_RADIUS, 1, dialogBorder);
+		CardRenderer.draw(
+				context,
+				dialogX,
+				dialogY,
+				DIALOG_WIDTH,
+				dialogHeight,
+				CardRenderer.Style.panel(),
+				dialogBackground,
+				dialogBorder,
+				ColorUtil.withAlpha(theme.shadow(), alpha)
+		);
 
 		int textX = dialogX + Spacing.LG;
 		int titleY = dialogY + Spacing.LG;

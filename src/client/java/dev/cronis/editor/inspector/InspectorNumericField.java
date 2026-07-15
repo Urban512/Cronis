@@ -4,8 +4,9 @@ import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.component.GuiComponent;
 import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -20,9 +21,9 @@ import java.util.function.Consumer;
  * Numeric inspector field that keeps temporary edit text separate from committed values.
  */
 public final class InspectorNumericField extends GuiComponent implements Focusable {
-	public static final int HEIGHT = 30;
+	public static final int HEIGHT = GuiMetrics.HEIGHT_CONTROL;
 
-	private static final int CORNER_RADIUS = 10;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
 	private static final int PADDING_X = Spacing.MD;
 	private static final int MAX_LENGTH = 16;
 
@@ -191,8 +192,7 @@ public final class InspectorNumericField extends GuiComponent implements Focusab
 		int background = ColorUtil.lerp(theme.controlBackground(), theme.controlHover(), hoverAnimation.getValue() * 0.35f);
 		int border = ColorUtil.lerp(theme.controlBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
 
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, border);
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
 
 		int textY = y + (height - font.lineHeight) / 2;
 		int textX = x + PADDING_X;

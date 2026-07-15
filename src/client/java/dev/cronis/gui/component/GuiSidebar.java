@@ -1,10 +1,10 @@
 package dev.cronis.gui.component;
 
-import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.layout.Padding;
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.layout.VerticalLayout;
 import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -18,10 +18,8 @@ import java.util.function.Consumer;
  * Left navigation sidebar with branding, scrollable categories, and footer.
  */
 public class GuiSidebar extends GuiComponent {
-	public static final int WIDTH = 220;
+	public static final int WIDTH = GuiMetrics.SIDEBAR_WIDTH;
 
-	private static final int LOGO_SIZE = 30;
-	private static final int LOGO_RADIUS = 9;
 	private static final String VERSION_LABEL = "Cronis v1.0.0";
 
 	private static final String[] CATEGORIES = {
@@ -30,13 +28,13 @@ public class GuiSidebar extends GuiComponent {
 	};
 
 	private final List<GuiSidebarItem> items = new ArrayList<>();
-	private final GuiScrollPanel navScrollPanel = new GuiScrollPanel(new VerticalLayout(Spacing.SM));
+	private final GuiScrollPanel navScrollPanel = new GuiScrollPanel(new VerticalLayout(Spacing.XS));
 	private GuiSidebarItem selectedItem;
 	private Consumer<GuiSidebarItem> selectionListener;
 
 	public GuiSidebar() {
 		this.width = WIDTH;
-		navScrollPanel.setContentPadding(Padding.symmetric(Spacing.SM, 0));
+		navScrollPanel.setContentPadding(Padding.symmetric(Spacing.XS, 0));
 
 		for (String category : CATEGORIES) {
 			GuiSidebarItem item = new GuiSidebarItem(category);
@@ -64,12 +62,12 @@ public class GuiSidebar extends GuiComponent {
 		setBounds(x, y, WIDTH, height);
 		Font font = Minecraft.getInstance().font;
 
-		int padding = Spacing.LG;
+		int padding = GuiMetrics.PADDING_PANEL.left();
 		int headerHeight = headerSectionHeight(font, padding);
 		int footerHeight = footerSectionHeight(font, padding);
 		int navY = y + headerHeight;
 		int navHeight = Math.max(0, height - headerHeight - footerHeight);
-		int navInset = Spacing.MD;
+		int navInset = Spacing.SM;
 
 		navScrollPanel.setBounds(x + navInset, navY, WIDTH - navInset * 2, navHeight);
 	}
@@ -80,12 +78,21 @@ public class GuiSidebar extends GuiComponent {
 		context.fill(x, y, x + width, y + height, theme.sidebarBackground());
 		context.fill(x + width - 1, y, x + width, y + height, theme.headerDivider());
 
-		int padding = Spacing.LG;
+		int padding = GuiMetrics.PADDING_PANEL.left();
 		int logoX = x + padding;
 		int logoY = y + padding;
-		RoundedRenderer.fill(context, logoX, logoY, LOGO_SIZE, LOGO_SIZE, LOGO_RADIUS, theme.logoAccent());
-		context.text(font, "Cronis", logoX + LOGO_SIZE + Spacing.MD, logoY + 2, theme.textPrimary(), false);
-		context.text(font, "SkyBlock HUD", logoX + LOGO_SIZE + Spacing.MD, logoY + font.lineHeight + 3, theme.textMuted(), false);
+		RoundedRenderer.fill(
+				context,
+				logoX,
+				logoY,
+				GuiMetrics.LOGO_SIZE,
+				GuiMetrics.LOGO_SIZE,
+				GuiMetrics.LOGO_RADIUS,
+				theme.logoAccent()
+		);
+		int brandX = logoX + GuiMetrics.LOGO_SIZE + Spacing.MD;
+		context.text(font, "Cronis", brandX, logoY + Spacing.XS, theme.textPrimary(), false);
+		context.text(font, "SkyBlock HUD", brandX, logoY + font.lineHeight + Spacing.XS, theme.textMuted(), false);
 
 		int footerY = y + height - padding - font.lineHeight;
 		context.text(font, VERSION_LABEL, x + padding, footerY, theme.textMuted(), false);
@@ -112,12 +119,12 @@ public class GuiSidebar extends GuiComponent {
 	}
 
 	private int headerSectionHeight(Font font, int padding) {
-		int titleBlockHeight = font.lineHeight * 2 + Spacing.XS + 2;
-		return padding + Math.max(LOGO_SIZE, titleBlockHeight) + Spacing.MD;
+		int titleBlockHeight = font.lineHeight * 2 + Spacing.SM;
+		return padding + Math.max(GuiMetrics.LOGO_SIZE, titleBlockHeight) + Spacing.LG;
 	}
 
 	private int footerSectionHeight(Font font, int padding) {
-		return padding + font.lineHeight + Spacing.MD;
+		return padding + font.lineHeight + Spacing.LG;
 	}
 
 	private void selectItem(GuiSidebarItem item) {

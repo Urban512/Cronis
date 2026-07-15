@@ -1,11 +1,10 @@
 package dev.cronis.gui.component;
 
 import dev.cronis.gui.animation.FadeAnimation;
-import dev.cronis.gui.layout.Padding;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
-import dev.cronis.gui.render.ShadowRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -14,13 +13,11 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Visual grouping surface for related content.
  */
 public class GuiCard extends GuiComponent {
-	private static final int CORNER_RADIUS = 12;
-	private static final Padding PADDING = Padding.symmetric(Spacing.LG, Spacing.LG);
-	private static final int DESCRIPTION_GAP = Spacing.SM;
+	private static final int DESCRIPTION_GAP = Spacing.XS;
 
 	private final String title;
 	private final String description;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(12f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIMATION_NORMAL);
 	private boolean hovered;
 
 	public GuiCard(String title, String description) {
@@ -30,7 +27,11 @@ public class GuiCard extends GuiComponent {
 
 	@Override
 	public int getPreferredHeight(int availableWidth) {
-		return PADDING.vertical() + 9 + DESCRIPTION_GAP + 9 + PADDING.vertical();
+		int lineHeight = 9;
+		return DesignTokens.CARD_PADDING.vertical()
+				+ lineHeight
+				+ DESCRIPTION_GAP
+				+ lineHeight;
 	}
 
 	@Override
@@ -46,26 +47,19 @@ public class GuiCard extends GuiComponent {
 		var theme = ThemeManager.get();
 		float hover = hoverAnimation.getValue();
 
-		if (hover > 0f) {
-			ShadowRenderer.draw(
-					context,
-					x,
-					y,
-					width,
-					height,
-					CORNER_RADIUS,
-					6,
-					0.18f * hover,
-					theme.cardShadow()
-			);
-		}
+		CardRenderer.draw(
+				context,
+				x,
+				y,
+				width,
+				height,
+				CardRenderer.Style.card(),
+				theme.cardBackground(),
+				ColorUtil.lerp(theme.cardBorder(), theme.cardHoverBorder(), hover)
+		);
 
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, theme.cardBackground());
-		int borderColor = ColorUtil.lerp(theme.cardBorder(), theme.cardHoverBorder(), hover);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, borderColor);
-
-		int textX = x + PADDING.left();
-		int titleY = y + PADDING.top();
+		int textX = x + DesignTokens.CARD_PADDING.left();
+		int titleY = y + DesignTokens.CARD_PADDING.top();
 		int descriptionY = titleY + font.lineHeight + DESCRIPTION_GAP;
 
 		context.text(font, title, textX, titleY, theme.textPrimary(), false);

@@ -1,6 +1,7 @@
 package dev.cronis.gui.component;
 
 import dev.cronis.gui.layout.Padding;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.GuiTheme;
 import dev.cronis.gui.theme.ThemeManager;
 
@@ -29,19 +30,20 @@ public record GuiWindowStyle(
 	 */
 	public static GuiWindowStyle defaults() {
 		GuiTheme theme = ThemeManager.get();
+		GuiMetrics.Elevation elevation = GuiMetrics.ELEVATION_WINDOW;
 		return new GuiWindowStyle(
 				theme.windowBackground(),
 				theme.windowBorder(),
-				18,
-				16,
-				0.42f,
+				GuiMetrics.RADIUS_WINDOW,
+				elevation.shadowRadius(),
+				elevation.shadowOpacity(),
 				theme.textPrimary(),
 				Padding.all(0),
-				0.74f,
-				0.80f,
-				480,
-				320,
-				16,
+				0.76f,
+				0.82f,
+				500,
+				340,
+				GuiMetrics.SCREEN_MARGIN,
 				false
 		);
 	}

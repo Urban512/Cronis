@@ -60,7 +60,7 @@ import org.lwjgl.glfw.GLFW;
 
 public class HudEditorScreen extends GuiScreen implements WidgetContextMenuHost {
 
-	private static final int SAFE_AREA_PADDING = 8;
+	private static final int SAFE_AREA_PADDING = dev.cronis.gui.layout.Spacing.SM;
 
 
 
@@ -262,7 +262,7 @@ public class HudEditorScreen extends GuiScreen implements WidgetContextMenuHost 
 
 		Widget selected = selectionManager.getSelectedOrNull();
 
-		if (selected != null) {
+		if (selected != null && selected.isManuallyResizable()) {
 
 			WidgetBounds selectedBounds = selected.resolveBounds(lastWidgetContext);
 

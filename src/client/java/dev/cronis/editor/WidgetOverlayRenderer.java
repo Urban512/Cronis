@@ -102,7 +102,9 @@ public final class WidgetOverlayRenderer {
 		WidgetBounds bounds = selected.resolveBounds(context);
 		int selectionColor = theme.accent();
 		drawOutline(graphics, bounds, SELECTION_OUTLINE_THICKNESS, selectionColor);
-		renderHandles(graphics, bounds, theme);
+		if (selected.isManuallyResizable()) {
+			renderHandles(graphics, bounds, theme);
+		}
 	}
 
 	private void renderHandles(GuiGraphicsExtractor graphics, WidgetBounds bounds, GuiTheme theme) {

@@ -3,20 +3,20 @@ package dev.cronis.gui.component;
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.animation.ValueAnimation;
 import dev.cronis.gui.focus.Focusable;
-import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.ColorUtil;
+import dev.cronis.gui.render.ProgressBarRenderer;
 import dev.cronis.gui.render.RoundedRenderer;
 import dev.cronis.gui.theme.ThemeManager;
-import net.minecraft.client.input.CharacterEvent;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.function.Consumer;
 
 /**
- * Numeric range slider with draggable thumb.
+ * Numeric range slider with draggable thumb and optional step snapping.
  */
 public class GuiSlider extends GuiComponent implements Focusable {
 	private static final int TRACK_HEIGHT = 6;
@@ -24,6 +24,7 @@ public class GuiSlider extends GuiComponent implements Focusable {
 
 	private final float min;
 	private final float max;
+	private final float step;
 	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
 	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
 	private final ValueAnimation valueAnimation;
@@ -32,11 +33,17 @@ public class GuiSlider extends GuiComponent implements Focusable {
 	private boolean focused;
 	private boolean dragging;
 	private Consumer<Float> onChange;
+	private Consumer<Float> onRelease;
 
 	public GuiSlider(float min, float max, float value) {
+		this(min, max, value, 0f);
+	}
+
+	public GuiSlider(float min, float max, float value, float step) {
 		this.min = min;
 		this.max = max;
-		this.value = clamp(value);
+		this.step = Math.max(0f, step);
+		this.value = snap(clamp(value));
 		this.height = 28;
 		this.valueAnimation = new ValueAnimation(16f, min, max, this.value);
 		this.valueAnimation.setImmediate(this.value);
@@ -47,20 +54,37 @@ public class GuiSlider extends GuiComponent implements Focusable {
 	}
 
 	public void setValue(float value) {
-		float clamped = clamp(value);
-		if (this.value == clamped) {
+		float snapped = snap(clamp(value));
+		if (this.value == snapped) {
 			return;
 		}
 
-		this.value = clamped;
-		valueAnimation.setTarget(clamped);
+		this.value = snapped;
+		valueAnimation.setTarget(snapped);
 		if (onChange != null) {
-			onChange.accept(clamped);
+			onChange.accept(snapped);
 		}
+	}
+
+	/**
+	 * Sets the slider value without firing {@code onChange}.
+	 */
+	public void setValueSilent(float value) {
+		float snapped = snap(clamp(value));
+		this.value = snapped;
+		valueAnimation.setImmediate(snapped);
 	}
 
 	public GuiSlider setOnChange(Consumer<Float> onChange) {
 		this.onChange = onChange;
+		return this;
+	}
+
+	/**
+	 * Invoked when a drag interaction ends or keyboard adjustment settles.
+	 */
+	public GuiSlider setOnRelease(Consumer<Float> onRelease) {
+		this.onRelease = onRelease;
 		return this;
 	}
 
@@ -104,6 +128,9 @@ public class GuiSlider extends GuiComponent implements Focusable {
 		}
 
 		dragging = false;
+		if (onRelease != null) {
+			onRelease.accept(value);
+		}
 		return true;
 	}
 
@@ -124,13 +151,19 @@ public class GuiSlider extends GuiComponent implements Focusable {
 			return false;
 		}
 
-		float step = (max - min) * 0.05f;
+		float keyStep = step > 0f ? step : (max - min) * 0.05f;
 		if (event.key() == GLFW.GLFW_KEY_LEFT) {
-			setValue(value - step);
+			setValue(value - keyStep);
+			if (onRelease != null) {
+				onRelease.accept(value);
+			}
 			return true;
 		}
 		if (event.key() == GLFW.GLFW_KEY_RIGHT) {
-			setValue(value + step);
+			setValue(value + keyStep);
+			if (onRelease != null) {
+				onRelease.accept(value);
+			}
 			return true;
 		}
 		return false;
@@ -145,13 +178,8 @@ public class GuiSlider extends GuiComponent implements Focusable {
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
 		var theme = ThemeManager.get();
 		int trackY = y + (height - TRACK_HEIGHT) / 2;
-		int border = ColorUtil.lerp(theme.controlBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
-		RoundedRenderer.fill(context, x, trackY, width, TRACK_HEIGHT, TRACK_HEIGHT / 2, theme.sliderTrack());
-		RoundedRenderer.outline(context, x, trackY, width, TRACK_HEIGHT, TRACK_HEIGHT / 2, 1, border);
-
 		float ratio = normalize(valueAnimation.getValue());
-		int fillWidth = Math.max(THUMB_SIZE / 2, Math.round(width * ratio));
-		RoundedRenderer.fill(context, x, trackY, fillWidth, TRACK_HEIGHT, TRACK_HEIGHT / 2, theme.sliderFill());
+		ProgressBarRenderer.draw(context, x, trackY, width, TRACK_HEIGHT, ratio, theme.sliderTrack(), theme.sliderFill());
 
 		int thumbX = x + Math.round((width - THUMB_SIZE) * ratio);
 		int thumbY = y + (height - THUMB_SIZE) / 2;
@@ -180,5 +208,12 @@ public class GuiSlider extends GuiComponent implements Focusable {
 
 	private float clamp(float amount) {
 		return Math.max(min, Math.min(max, amount));
+	}
+
+	private float snap(float amount) {
+		if (step <= 0f) {
+			return amount;
+		}
+		return Math.round(amount / step) * step;
 	}
 }

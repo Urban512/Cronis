@@ -13,12 +13,14 @@ public record WidgetLayoutSnapshot(
 		String id,
 		boolean visible,
 		WidgetPosition position,
-		WidgetSize size
+		WidgetSize size,
+		float scale
 ) {
 	public WidgetLayoutSnapshot {
 		Objects.requireNonNull(id, "id");
 		Objects.requireNonNull(position, "position");
 		Objects.requireNonNull(size, "size");
+		scale = Widget.snapScale(scale);
 	}
 
 	/**
@@ -33,7 +35,8 @@ public record WidgetLayoutSnapshot(
 				widget.getId(),
 				widget.isVisible(),
 				widget.getPosition(),
-				new WidgetSize(widget.getWidth(), widget.getHeight())
+				new WidgetSize(widget.getWidth(), widget.getHeight()),
+				widget.getScale()
 		);
 	}
 
@@ -50,6 +53,7 @@ public record WidgetLayoutSnapshot(
 
 		widget.setVisible(visible);
 		widget.setPosition(position);
+		widget.setScale(scale);
 		widget.setSize(size.width(), size.height());
 	}
 }

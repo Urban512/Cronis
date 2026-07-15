@@ -2,8 +2,9 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.IconRenderer;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.render.CardRenderer;
+import dev.cronis.gui.render.IconManager;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -12,16 +13,16 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Compact icon button for header actions.
  */
 public class GuiIconButton extends GuiComponent {
-	private static final int SIZE = 30;
-	private static final int CORNER_RADIUS = 8;
-	private static final int ICON_SIZE = 14;
+	private static final int SIZE = GuiMetrics.HEIGHT_CONTROL;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
+	private static final int ICON_SIZE = GuiMetrics.ICON_MD;
 
-	private final IconRenderer.Icon icon;
+	private final IconManager.Icon icon;
 	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
 	private Runnable onClick;
 	private boolean hovered;
 
-	public GuiIconButton(IconRenderer.Icon icon) {
+	public GuiIconButton(IconManager.Icon icon) {
 		this.icon = icon;
 		this.width = SIZE;
 		this.height = SIZE;
@@ -76,11 +77,20 @@ public class GuiIconButton extends GuiComponent {
 		int iconColor = ColorUtil.lerp(theme.iconDefault(), theme.iconHover(), hoverAnimation.getValue());
 
 		if (hoverAnimation.getValue() > 0f) {
-			RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
+			CardRenderer.draw(
+					context,
+					x,
+					y,
+					width,
+					height,
+					CardRenderer.Style.control(),
+					background,
+					theme.cardBorder()
+			);
 		}
 
 		int iconX = x + (width - ICON_SIZE) / 2;
 		int iconY = y + (height - ICON_SIZE) / 2;
-		IconRenderer.draw(context, icon, iconX, iconY, ICON_SIZE, iconColor);
+		IconManager.draw(context, icon, iconX, iconY, ICON_SIZE, iconColor);
 	}
 }

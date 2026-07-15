@@ -5,6 +5,12 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
+# PowerShell defaults to ASCII for external process output, which replaces
+# non-ASCII metadata with '?'. Force UTF-8 before any Write-Output calls.
+$utf8Encoding = [System.Text.UTF8Encoding]::new($false)
+[Console]::OutputEncoding = $utf8Encoding
+$OutputEncoding = $utf8Encoding
+
 function Write-Stage {
     param(
         [string]$Name,

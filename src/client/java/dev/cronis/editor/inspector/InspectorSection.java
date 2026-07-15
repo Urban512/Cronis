@@ -1,7 +1,7 @@
 package dev.cronis.editor.inspector;
 
 import dev.cronis.gui.component.GuiComponent;
-import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.theme.GuiMetrics;
 
 import java.util.List;
 
@@ -25,7 +25,7 @@ final class InspectorSection extends GuiComponent {
 			}
 
 			if (!first) {
-				totalHeight += Spacing.MD;
+				totalHeight += GuiMetrics.ROW_GAP;
 			}
 
 			totalHeight += child.getPreferredHeight(availableWidth);
@@ -43,7 +43,7 @@ final class InspectorSection extends GuiComponent {
 			}
 
 			if (!first) {
-				currentY += Spacing.MD;
+				currentY += GuiMetrics.ROW_GAP;
 			}
 
 			int childHeight = child.getPreferredHeight(availableWidth);

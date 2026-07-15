@@ -4,8 +4,6 @@ import dev.cronis.gui.layout.Padding;
 import dev.cronis.gui.render.BlurRenderer;
 import dev.cronis.gui.render.RenderUtil;
 import dev.cronis.gui.render.RoundedRenderer;
-import dev.cronis.gui.render.ShadowRenderer;
-import dev.cronis.gui.theme.ThemeManager;
 import dev.cronis.gui.util.GuiBounds;
 import dev.cronis.gui.util.GuiSize;
 import net.minecraft.client.gui.Font;
@@ -89,19 +87,6 @@ public class GuiWindow extends GuiComponent {
 		if (width <= 0 || height <= 0) {
 			return;
 		}
-
-		var theme = ThemeManager.get();
-		ShadowRenderer.draw(
-				context,
-				x,
-				y,
-				width,
-				height,
-				style.cornerRadius(),
-				style.shadowRadius(),
-				style.shadowOpacity(),
-				theme.shadow()
-		);
 
 		if (style.blurBackground()) {
 			blurRenderer.drawBlurArea(context, x, y, width, height, style.cornerRadius());

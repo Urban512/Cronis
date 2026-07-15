@@ -3,15 +3,13 @@ package dev.cronis.editor.inspector;
 import dev.cronis.gui.component.GuiComponent;
 import dev.cronis.gui.component.GuiDivider;
 import dev.cronis.gui.component.GuiDropdown;
-import dev.cronis.gui.component.GuiLabel;
 import dev.cronis.gui.component.GuiScrollPanel;
+import dev.cronis.gui.component.GuiSlider;
 import dev.cronis.gui.component.GuiTextField;
 import dev.cronis.gui.component.GuiToggle;
-import dev.cronis.gui.layout.Padding;
-import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.layout.VerticalLayout;
-import dev.cronis.gui.render.RoundedRenderer;
-import dev.cronis.gui.render.ShadowRenderer;
+import dev.cronis.gui.render.CardRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import dev.cronis.settings.BooleanSetting;
 import dev.cronis.settings.DoubleSetting;
@@ -35,14 +33,18 @@ import java.util.List;
  * Floating inspector panel for editing the currently selected HUD widget.
  */
 public final class WidgetInspectorPanel extends GuiComponent {
-	public static final int WIDTH = 280;
-	private static final int PANEL_MARGIN = Spacing.LG;
-	private static final int CORNER_RADIUS = 14;
+	public static final int WIDTH = GuiMetrics.INSPECTOR_WIDTH;
+	private static final int PANEL_MARGIN = GuiMetrics.SCREEN_MARGIN;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_PANEL;
 
-	private final GuiScrollPanel scrollPanel = new GuiScrollPanel(new VerticalLayout(Spacing.MD));
+	private final GuiScrollPanel scrollPanel = new GuiScrollPanel(new VerticalLayout(GuiMetrics.ROW_GAP));
 	private final InspectorHeader header = new InspectorHeader();
 	private final GuiDivider headerDivider = new GuiDivider();
 	private final InspectorRow visibilityRow = new InspectorRow("Visible", new GuiToggle(true));
+	private final InspectorRow scaleRow = new InspectorRow(
+			"Scale",
+			new GuiSlider(Widget.SCALE_MIN, Widget.SCALE_MAX, Widget.SCALE_DEFAULT, Widget.SCALE_STEP)
+	);
 	private final InspectorRow positionXRow = new InspectorRow("Position X", new InspectorNumericField(InspectorNumericField.Mode.SIGNED_FLOAT));
 	private final InspectorRow positionYRow = new InspectorRow("Position Y", new InspectorNumericField(InspectorNumericField.Mode.SIGNED_FLOAT));
 	private final InspectorRow widthRow = new InspectorRow("Width", new InspectorNumericField(InspectorNumericField.Mode.POSITIVE_INT));
@@ -52,6 +54,7 @@ public final class WidgetInspectorPanel extends GuiComponent {
 	private final List<GuiComponent> propertyRows = new ArrayList<>();
 
 	private final GuiToggle visibilityToggle = (GuiToggle) visibilityRow.control();
+	private final GuiSlider scaleSlider = (GuiSlider) scaleRow.control();
 	private final InspectorNumericField positionXField = (InspectorNumericField) positionXRow.control();
 	private final InspectorNumericField positionYField = (InspectorNumericField) positionYRow.control();
 	private final InspectorNumericField widthField = (InspectorNumericField) widthRow.control();
@@ -63,11 +66,12 @@ public final class WidgetInspectorPanel extends GuiComponent {
 	private Runnable onLayoutChanged;
 
 	public WidgetInspectorPanel() {
-		scrollPanel.setContentPadding(Padding.all(Spacing.LG));
+		scrollPanel.setContentPadding(GuiMetrics.PADDING_PANEL);
 		addChild(scrollPanel);
 
 		propertyRows.add(headerDivider);
 		propertyRows.add(visibilityRow);
+		propertyRows.add(scaleRow);
 		propertyRows.add(positionXRow);
 		propertyRows.add(positionYRow);
 		propertyRows.add(widthRow);
@@ -118,6 +122,8 @@ public final class WidgetInspectorPanel extends GuiComponent {
 		}
 
 		header.setTitle(widget.getDisplayName());
+		widthRow.setVisible(widget.isManuallyResizable());
+		heightRow.setVisible(widget.isManuallyResizable());
 		rebuildSettingsSection();
 		syncFromWidget();
 	}
@@ -152,9 +158,17 @@ public final class WidgetInspectorPanel extends GuiComponent {
 	@Override
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
 		var theme = ThemeManager.get();
-		ShadowRenderer.draw(context, x, y, width, height, CORNER_RADIUS, 8, 0.28f, theme.cardShadow());
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, theme.cardBackground());
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, theme.cardBorder());
+		CardRenderer.draw(
+				context,
+				x,
+				y,
+				width,
+				height,
+				CardRenderer.Style.panel(),
+				theme.cardBackground(),
+				theme.cardBorder(),
+				theme.cardShadow()
+		);
 	}
 
 	@Override
@@ -178,6 +192,10 @@ public final class WidgetInspectorPanel extends GuiComponent {
 			return;
 		}
 
+		scaleSlider.setValueSilent(boundWidget.getScale());
+		widthRow.setVisible(boundWidget.isManuallyResizable());
+		heightRow.setVisible(boundWidget.isManuallyResizable());
+
 		if (!positionXField.isEditing()) {
 			positionXField.applyCommittedValue(formatNumber(boundWidget.getPosition().offsetX()));
 		}
@@ -194,6 +212,8 @@ public final class WidgetInspectorPanel extends GuiComponent {
 
 	private void clearPropertyHandlers() {
 		visibilityToggle.setOnChange(null);
+		scaleSlider.setOnChange(null);
+		scaleSlider.setOnRelease(null);
 		positionXField.setOnCommit(null);
 		positionYField.setOnCommit(null);
 		widthField.setOnCommit(null);
@@ -204,6 +224,27 @@ public final class WidgetInspectorPanel extends GuiComponent {
 		visibilityToggle.setOnChange(value -> {
 			if (!syncing && boundWidget != null) {
 				boundWidget.setVisible(value);
+				publishLayoutChanged();
+			}
+		});
+
+		scaleSlider.setOnChange(value -> {
+			if (!syncing && boundWidget != null) {
+				boundWidget.setScale(value);
+				if (!boundWidget.isManuallyResizable()) {
+					boundWidget.applyPreferredSize();
+				} else {
+					WidgetSize preferred = boundWidget.getPreferredSize();
+					boundWidget.setSize(
+							Math.max(0, Math.round(preferred.width() * boundWidget.getScale())),
+							Math.max(0, Math.round(preferred.height() * boundWidget.getScale()))
+					);
+				}
+			}
+		});
+		scaleSlider.setOnRelease(value -> {
+			if (!syncing && boundWidget != null) {
+				syncLayoutFieldsFromWidget();
 				publishLayoutChanged();
 			}
 		});
@@ -248,7 +289,7 @@ public final class WidgetInspectorPanel extends GuiComponent {
 
 		try {
 			int parsedWidth = Integer.parseInt(value.trim());
-			WidgetSize minimum = boundWidget.getMinimumSize();
+			WidgetSize minimum = boundWidget.getScaledMinimumSize();
 			boundWidget.setSize(Math.max(minimum.width(), parsedWidth), boundWidget.getHeight());
 			publishLayoutChanged();
 		} catch (NumberFormatException ignored) {
@@ -262,7 +303,7 @@ public final class WidgetInspectorPanel extends GuiComponent {
 
 		try {
 			int parsedHeight = Integer.parseInt(value.trim());
-			WidgetSize minimum = boundWidget.getMinimumSize();
+			WidgetSize minimum = boundWidget.getScaledMinimumSize();
 			boundWidget.setSize(boundWidget.getWidth(), Math.max(minimum.height(), parsedHeight));
 			publishLayoutChanged();
 		} catch (NumberFormatException ignored) {

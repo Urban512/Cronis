@@ -202,18 +202,15 @@ final class PowerShellWindowsSmtcBackend implements WindowsSmtcBackend {
 	}
 
 	private ScriptResult runScript(boolean probe) throws IOException, InterruptedException {
+		String scriptInvocation = buildScriptInvocation(probe);
 		ProcessBuilder builder = new ProcessBuilder(
 				"powershell.exe",
 				"-NoProfile",
 				"-ExecutionPolicy",
 				"Bypass",
-				"-File",
-				scriptPath.toString()
+				"-Command",
+				scriptInvocation
 		);
-
-		if (probe) {
-			builder.command().add("-Probe");
-		}
 
 		builder.redirectErrorStream(true);
 		Process process = builder.start();
@@ -284,6 +281,18 @@ final class PowerShellWindowsSmtcBackend implements WindowsSmtcBackend {
 		} catch (NumberFormatException ignored) {
 			return fallback;
 		}
+	}
+
+	private String buildScriptInvocation(boolean probe) {
+		String escapedScriptPath = escapePowerShellSingleQuoted(scriptPath.toAbsolutePath().toString());
+		String probeArgument = probe ? " -Probe" : "";
+		return "[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false); "
+				+ "$OutputEncoding = [Console]::OutputEncoding; "
+				+ "& '" + escapedScriptPath + "'" + probeArgument;
+	}
+
+	private static String escapePowerShellSingleQuoted(String value) {
+		return value.replace("'", "''");
 	}
 
 	private record ScriptResult(boolean success, String stage, String detail, Map<String, String> values, String errorMessage) {

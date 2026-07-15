@@ -3,6 +3,7 @@ package dev.cronis.editor.inspector;
 import dev.cronis.gui.component.GuiComponent;
 import dev.cronis.gui.component.GuiLabel;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.theme.GuiMetrics;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
@@ -66,7 +67,7 @@ public final class InspectorRow extends GuiComponent {
 		int rowHeight = getPreferredHeight(width);
 		label.setBounds(x, y + verticalInset(label, rowHeight), labelWidth, rowHeight);
 		control.setBounds(
-				x + labelWidth + Spacing.SM,
+				x + labelWidth + Spacing.MD,
 				y + verticalInset(control, rowHeight),
 				controlWidth,
 				control.getPreferredHeight(controlWidth)
@@ -78,7 +79,7 @@ public final class InspectorRow extends GuiComponent {
 	}
 
 	private int controlWidth(int availableWidth) {
-		return Math.max(48, availableWidth - labelWidth(availableWidth) - Spacing.SM);
+		return Math.max(48, availableWidth - labelWidth(availableWidth) - Spacing.MD);
 	}
 
 	private static int verticalInset(GuiComponent component, int rowHeight) {

@@ -161,8 +161,9 @@ final class WidgetLayoutCodec {
 		boolean visible = readBoolean(widgetObject, "visible", true);
 		WidgetPosition position = readPosition(widgetObject);
 		WidgetSize size = readSize(widgetObject);
+		float scale = readFloat(widgetObject, "scale", 1.0f);
 
-		return new WidgetLayoutSnapshot(id, visible, position, size);
+		return new WidgetLayoutSnapshot(id, visible, position, size, scale);
 	}
 
 	private static JsonObject encodeLayout(Map<String, WidgetLayoutSnapshot> widgets) {
@@ -191,6 +192,7 @@ final class WidgetLayoutCodec {
 		sizeObject.addProperty("width", snapshot.size().width());
 		sizeObject.addProperty("height", snapshot.size().height());
 		widgetObject.add("size", sizeObject);
+		widgetObject.addProperty("scale", snapshot.scale());
 
 		return widgetObject;
 	}

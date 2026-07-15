@@ -7,7 +7,7 @@ import dev.cronis.gui.component.GuiComponent;
 import dev.cronis.gui.component.GuiDropdown;
 import dev.cronis.gui.component.GuiTextField;
 import dev.cronis.gui.component.GuiToggle;
-import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.settings.BooleanSetting;
 import dev.cronis.settings.DoubleSetting;
 import dev.cronis.settings.EnumSetting;
@@ -62,7 +62,7 @@ public final class SettingGroupPanel extends GuiComponent {
 			}
 
 			if (!first) {
-				totalHeight += Spacing.MD;
+				totalHeight += GuiMetrics.ROW_GAP;
 			}
 
 			totalHeight += child.getPreferredHeight(availableWidth);
@@ -189,7 +189,7 @@ public final class SettingGroupPanel extends GuiComponent {
 			}
 
 			if (!first) {
-				currentY += Spacing.MD;
+				currentY += GuiMetrics.ROW_GAP;
 			}
 
 			int childHeight = child.getPreferredHeight(width);

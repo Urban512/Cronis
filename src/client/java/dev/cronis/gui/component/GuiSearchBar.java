@@ -3,8 +3,9 @@ package dev.cronis.gui.component;
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.IconRenderer;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.render.CardRenderer;
+import dev.cronis.gui.render.IconManager;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -15,9 +16,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Searching is not implemented yet; this component is visual only.
  */
 public class GuiSearchBar extends GuiComponent {
-	private static final int CORNER_RADIUS = 10;
-	private static final int HEIGHT = 30;
-	private static final int ICON_SIZE = 12;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
+	private static final int HEIGHT = GuiMetrics.HEIGHT_CONTROL;
+	private static final int ICON_SIZE = GuiMetrics.ICON_SM;
 	private static final int MIN_WIDTH = 160;
 	private static final int MAX_WIDTH = 360;
 
@@ -79,12 +80,11 @@ public class GuiSearchBar extends GuiComponent {
 		int background = ColorUtil.lerp(theme.searchBackground(), theme.sidebarItemHover(), hoverAnimation.getValue() * 0.4f);
 		int border = ColorUtil.lerp(theme.searchBorder(), theme.searchBorderFocused(), focusAnimation.getValue());
 
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, border);
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
 
 		int iconX = x + Spacing.MD;
 		int iconY = y + (height - ICON_SIZE) / 2;
-		IconRenderer.draw(context, IconRenderer.Icon.SEARCH, iconX, iconY, ICON_SIZE, theme.searchPlaceholder());
+		IconManager.draw(context, IconManager.Icon.SEARCH, iconX, iconY, ICON_SIZE, theme.searchPlaceholder());
 
 		int textX = iconX + ICON_SIZE + Spacing.SM;
 		context.text(font, placeholder, textX, y + (height - font.lineHeight) / 2, theme.searchPlaceholder(), false);

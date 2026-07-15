@@ -3,8 +3,10 @@ package dev.cronis.editor.inspector;
 import dev.cronis.gui.component.GuiComponent;
 import dev.cronis.gui.component.GuiLabel;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.theme.GuiMetrics;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.render.IconManager;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -13,7 +15,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Inspector panel header with title and close control.
  */
 final class InspectorHeader extends GuiComponent {
-	private static final int HEIGHT = 28;
+	private static final int HEIGHT = GuiMetrics.HEIGHT_INSPECTOR_HEADER;
 	private static final int CLOSE_SIZE = 22;
 
 	private final GuiLabel titleLabel = GuiLabel.heading("Widget");
@@ -69,15 +71,20 @@ final class InspectorHeader extends GuiComponent {
 		int closeY = y + (height - CLOSE_SIZE) / 2;
 		if (closeHovered) {
 			int hover = ColorUtil.withAlpha(theme.controlHover(), 0.65f);
-			RoundedRenderer.fill(context, closeX, closeY, CLOSE_SIZE, CLOSE_SIZE, 6, hover);
+			CardRenderer.draw(
+					context,
+					closeX,
+					closeY,
+					CLOSE_SIZE,
+					CLOSE_SIZE,
+					CardRenderer.Style.control(),
+					hover,
+					theme.cardBorder()
+			);
 		}
 
-		int centerX = closeX + CLOSE_SIZE / 2;
-		int centerY = closeY + CLOSE_SIZE / 2;
-		int color = theme.textSecondary();
-		context.fill(centerX - 4, centerY - 4, centerX + 4, centerY - 3, color);
-		context.fill(centerX - 4, centerY + 3, centerX + 4, centerY + 4, color);
-		context.fill(centerX - 3, centerY - 3, centerX - 2, centerY + 3, color);
-		context.fill(centerX + 2, centerY - 3, centerX + 3, centerY + 3, color);
+		int iconX = closeX + (CLOSE_SIZE - GuiMetrics.ICON_SM) / 2;
+		int iconY = closeY + (CLOSE_SIZE - GuiMetrics.ICON_SM) / 2;
+		IconManager.draw(context, IconManager.Icon.CLOSE, iconX, iconY, GuiMetrics.ICON_SM, theme.textSecondary());
 	}
 }

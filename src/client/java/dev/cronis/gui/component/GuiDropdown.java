@@ -6,8 +6,10 @@ import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.overlay.GuiOverlay;
 import dev.cronis.gui.overlay.GuiOverlayLayer;
 import dev.cronis.gui.overlay.GuiOverlayManager;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.GuiTheme;
 import dev.cronis.gui.theme.ThemeManager;
 import dev.cronis.gui.util.GuiBounds;
@@ -26,10 +28,10 @@ import java.util.function.Consumer;
  * Select control with expandable option list.
  */
 public class GuiDropdown extends GuiComponent implements Focusable {
-	private static final int HEIGHT = 30;
-	private static final int ITEM_HEIGHT = 28;
-	private static final int CORNER_RADIUS = 10;
-	private static final int MENU_RADIUS = 8;
+	private static final int HEIGHT = GuiMetrics.HEIGHT_CONTROL;
+	private static final int ITEM_HEIGHT = GuiMetrics.HEIGHT_CONTROL;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
+	private static final int MENU_RADIUS = GuiMetrics.RADIUS_COMPACT;
 
 	private final List<String> options = new ArrayList<>();
 	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
@@ -176,8 +178,7 @@ public class GuiDropdown extends GuiComponent implements Focusable {
 		int background = ColorUtil.lerp(theme.dropdownBackground(), theme.controlHover(), hoverAnimation.getValue() * 0.35f);
 		int border = ColorUtil.lerp(theme.controlBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
 
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, border);
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
 
 		String label = getSelectedValue();
 		int textColor = enabled ? theme.textPrimary() : theme.controlDisabled();
@@ -213,8 +214,17 @@ public class GuiDropdown extends GuiComponent implements Focusable {
 		int menuBackground = ColorUtil.withAlpha(theme.cardBackground(), alpha);
 		int menuBorder = ColorUtil.withAlpha(theme.dropdownMenuBorder(), alpha);
 
-		RoundedRenderer.fill(context, menuBounds.x(), menuBounds.y(), menuBounds.width(), menuBounds.height(), MENU_RADIUS, menuBackground);
-		RoundedRenderer.outline(context, menuBounds.x(), menuBounds.y(), menuBounds.width(), menuBounds.height(), MENU_RADIUS, 1, menuBorder);
+		CardRenderer.draw(
+				context,
+				menuBounds.x(),
+				menuBounds.y(),
+				menuBounds.width(),
+				menuBounds.height(),
+				CardRenderer.Style.card(),
+				menuBackground,
+				menuBorder,
+				theme.cardShadow()
+		);
 
 		for (int index = 0; index < options.size(); index++) {
 			int itemY = menuBounds.y() + index * ITEM_HEIGHT;

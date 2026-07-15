@@ -1,8 +1,9 @@
 package dev.cronis.gui.component;
 
 import dev.cronis.gui.animation.FadeAnimation;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -11,8 +12,8 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Interactive component for triggering a single primary action.
  */
 public class GuiButton extends GuiComponent {
-	private static final int HEIGHT = 32;
-	private static final int CORNER_RADIUS = 10;
+	private static final int HEIGHT = GuiMetrics.HEIGHT_BUTTON;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
 	private static final int MIN_WIDTH = 88;
 
 	private String label;
@@ -73,8 +74,7 @@ public class GuiButton extends GuiComponent {
 		int border = ColorUtil.lerp(theme.buttonBorder(), theme.accent(), hoverAnimation.getValue() * 0.5f);
 		int textColor = enabled ? theme.buttonText() : theme.controlDisabled();
 
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, border);
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
 		int textX = x + (width - font.width(label)) / 2;
 		context.text(font, label, textX, y + (height - font.lineHeight) / 2, textColor, false);
 	}

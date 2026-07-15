@@ -126,7 +126,7 @@ public final class WidgetResizeController {
 	}
 
 	private WidgetBounds resizeToMouse(int mouseX, int mouseY) {
-		WidgetSize minimum = widget.getMinimumSize();
+		WidgetSize minimum = widget.getScaledMinimumSize();
 		return switch (handle) {
 			case TOP_LEFT -> fromFixedBottomRight(startBounds.right(), startBounds.bottom(), mouseX, mouseY, minimum);
 			case TOP_RIGHT -> fromFixedBottomLeft(startBounds.x(), startBounds.bottom(), mouseX, mouseY, minimum);
@@ -194,7 +194,7 @@ public final class WidgetResizeController {
 	}
 
 	private WidgetBounds enforceMinimum(WidgetBounds bounds) {
-		WidgetSize minimum = widget.getMinimumSize();
+		WidgetSize minimum = widget.getScaledMinimumSize();
 		int width = Math.max(minimum.width(), bounds.width());
 		int height = Math.max(minimum.height(), bounds.height());
 		if (width == bounds.width() && height == bounds.height()) {

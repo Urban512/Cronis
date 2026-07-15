@@ -6,8 +6,12 @@ package dev.cronis.widget;
 public enum WidgetCategory {
 	GENERAL("General"),
 	HUD("HUD"),
+	PERFORMANCE("Performance"),
+	MEDIA("Media"),
 	INFORMATION("Information"),
 	UTILITY("Utility"),
+	SKYBLOCK("SkyBlock"),
+	SOCIAL("Social"),
 	COMBAT("Combat"),
 	DEVELOPER("Developer");
 

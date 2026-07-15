@@ -2,7 +2,8 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.RoundedRenderer;
-import dev.cronis.gui.render.ShadowRenderer;
+import dev.cronis.gui.render.CardRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -15,7 +16,7 @@ import java.util.List;
  */
 public final class GuiContextMenu extends GuiComponent {
 	public static final int MIN_WIDTH = 128;
-	public static final int CORNER_RADIUS = 8;
+	public static final int CORNER_RADIUS = GuiMetrics.RADIUS_COMPACT;
 	private static final int VERTICAL_PADDING = Spacing.XS;
 
 	private final List<GuiContextMenuItem> items = new ArrayList<>();
@@ -68,9 +69,17 @@ public final class GuiContextMenu extends GuiComponent {
 	@Override
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
 		var theme = ThemeManager.get();
-		ShadowRenderer.draw(context, x, y, width, height, CORNER_RADIUS, 6, 0.24f, theme.cardShadow());
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, theme.cardBackground());
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, theme.cardBorder());
+		CardRenderer.draw(
+				context,
+				x,
+				y,
+				width,
+				height,
+				CardRenderer.Style.control(),
+				theme.cardBackground(),
+				theme.cardBorder(),
+				theme.cardShadow()
+		);
 	}
 
 	@Override

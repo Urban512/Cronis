@@ -2,6 +2,7 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.RenderUtil;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -14,22 +15,28 @@ public class GuiLabel extends GuiComponent {
 	private final int color;
 	private final RenderUtil.TextAlignment alignment;
 	private final boolean shadow;
-	private final boolean heading;
+	private final LabelStyle style;
+
+	public enum LabelStyle {
+		BODY,
+		HEADING,
+		SECTION
+	}
 
 	public GuiLabel(String text, int color) {
-		this(text, color, RenderUtil.TextAlignment.LEFT, false, false);
+		this(text, color, RenderUtil.TextAlignment.LEFT, false, LabelStyle.BODY);
 	}
 
 	public GuiLabel(String text, int color, RenderUtil.TextAlignment alignment, boolean shadow) {
-		this(text, color, alignment, shadow, false);
+		this(text, color, alignment, shadow, LabelStyle.BODY);
 	}
 
-	private GuiLabel(String text, int color, RenderUtil.TextAlignment alignment, boolean shadow, boolean heading) {
+	private GuiLabel(String text, int color, RenderUtil.TextAlignment alignment, boolean shadow, LabelStyle style) {
 		this.text = text;
 		this.color = color;
 		this.alignment = alignment;
 		this.shadow = shadow;
-		this.heading = heading;
+		this.style = style;
 	}
 
 	public static GuiLabel primary(String text) {
@@ -45,7 +52,15 @@ public class GuiLabel extends GuiComponent {
 	}
 
 	public static GuiLabel heading(String text) {
-		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, true);
+		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.HEADING);
+	}
+
+	public static GuiLabel section(String text) {
+		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.SECTION);
+	}
+
+	public static GuiLabel value(String text) {
+		return new GuiLabel(text, ThemeManager.get().textPrimary());
 	}
 
 	/**
@@ -59,12 +74,19 @@ public class GuiLabel extends GuiComponent {
 
 	@Override
 	public int getPreferredHeight(int availableWidth) {
-		return heading ? 14 : 10;
+		return switch (style) {
+			case SECTION -> 9 + Spacing.MD;
+			case HEADING -> 9 + Spacing.SM;
+			case BODY -> 9;
+		};
 	}
 
 	@Override
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
-		int textY = heading ? y + Spacing.XS : y;
+		int textY = switch (style) {
+			case SECTION, HEADING -> y + Spacing.XS;
+			case BODY -> y;
+		};
 		RenderUtil.drawAlignedText(context, font, text, x, textY, width, color, alignment, shadow);
 	}
 }

@@ -1,5 +1,6 @@
 package dev.cronis.client.hud;
 
+import dev.cronis.metrics.ClientMetricsService;
 import dev.cronis.widget.WidgetContext;
 import dev.cronis.widget.WidgetManager;
 import net.minecraft.client.DeltaTracker;
@@ -45,6 +46,7 @@ public final class CronisHudRenderer implements HudElement {
 		}
 
 		float deltaSeconds = deltaTracker.getRealtimeDeltaTicks() * SECONDS_PER_TICK;
+		ClientMetricsService.get().update(deltaSeconds);
 		WidgetContext context = WidgetContext.create(graphics, client.font, deltaSeconds);
 
 		widgetManager.update(context);

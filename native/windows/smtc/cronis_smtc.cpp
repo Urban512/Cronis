@@ -63,17 +63,18 @@ std::string wide_to_utf8(const std::wstring& wide) {
 		return "";
 	}
 
-	int size = WideCharToMultiByte(CP_UTF8, 0, wide.c_str(), static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr);
+	const int wide_length = static_cast<int>(wide.size());
+	int size = WideCharToMultiByte(CP_UTF8, 0, wide.data(), wide_length, nullptr, 0, nullptr, nullptr);
 	if (size <= 0) {
 		return "";
 	}
 
-	std::string result(size, '\0');
+	std::string result(static_cast<size_t>(size), '\0');
 	WideCharToMultiByte(
 			CP_UTF8,
 			0,
-			wide.c_str(),
-			static_cast<int>(wide.size()),
+			wide.data(),
+			wide_length,
 			result.data(),
 			size,
 			nullptr,
@@ -83,12 +84,30 @@ std::string wide_to_utf8(const std::wstring& wide) {
 }
 
 jstring to_jstring(JNIEnv* env, const std::wstring& wide) {
-	const std::string utf8 = wide_to_utf8(wide);
-	return env->NewStringUTF(utf8.c_str());
+	if (wide.empty()) {
+		return env->NewString(nullptr, 0);
+	}
+
+	return env->NewString(
+			reinterpret_cast<const jchar*>(wide.data()),
+			static_cast<jsize>(wide.size())
+	);
 }
 
 jstring to_jstring(JNIEnv* env, const std::string& value) {
-	return env->NewStringUTF(value.c_str());
+	if (value.empty()) {
+		return env->NewString(nullptr, 0);
+	}
+
+	const int byte_length = static_cast<int>(value.size());
+	int wide_length = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(), byte_length, nullptr, 0);
+	if (wide_length <= 0) {
+		return env->NewStringUTF(value.c_str());
+	}
+
+	std::wstring wide(static_cast<size_t>(wide_length), L'\0');
+	MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, value.data(), byte_length, wide.data(), wide_length);
+	return to_jstring(env, wide);
 }
 
 void reset_state_locked() {

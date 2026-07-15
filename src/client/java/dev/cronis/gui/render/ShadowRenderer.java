@@ -9,9 +9,6 @@ public final class ShadowRenderer {
 	private ShadowRenderer() {
 	}
 
-	/**
-	 * Draws a soft shadow behind a rounded rectangle.
-	 */
 	public static void draw(
 			GuiGraphicsExtractor context,
 			int x,
@@ -36,7 +33,7 @@ public final class ShadowRenderer {
 			int layerColor = ColorUtil.withAlpha(shadowColor, layerOpacity);
 			int offsetY = spread / 2;
 
-			RoundedRenderer.fill(
+			SurfaceRenderer.fill(
 					context,
 					x - spread,
 					y - spread + offsetY,

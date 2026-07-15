@@ -1,8 +1,8 @@
 package dev.cronis.gui.component;
 
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
-import dev.cronis.gui.render.ShadowRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -54,22 +54,18 @@ public class GuiApplicationWindow extends GuiWindow {
 
 		var theme = ThemeManager.get();
 		GuiWindowStyle style = getStyle();
+		int background = ColorUtil.withAlpha(theme.windowBackground(), fade);
 
-		ShadowRenderer.draw(
+		CardRenderer.draw(
 				context,
 				x,
 				y,
 				width,
 				height,
-				style.cornerRadius(),
-				style.shadowRadius(),
-				style.shadowOpacity() * fade,
-				theme.shadow()
+				new CardRenderer.Style(style.cornerRadius(), DesignTokens.BORDER_THICKNESS),
+				background,
+				ColorUtil.withAlpha(theme.windowBorder(), fade)
 		);
-
-		int background = ColorUtil.withAlpha(theme.windowBackground(), fade);
-		RoundedRenderer.fill(context, x, y, width, height, style.cornerRadius(), background);
-		RoundedRenderer.outline(context, x, y, width, height, style.cornerRadius(), 1, ColorUtil.withAlpha(theme.windowBorder(), fade));
 
 		header.render(context, font);
 		sidebar.render(context, font);

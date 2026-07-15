@@ -3,8 +3,9 @@ package dev.cronis.gui.component;
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.layout.Padding;
 import dev.cronis.gui.layout.Spacing;
+import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
-import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -13,7 +14,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Floating tooltip bubble rendered near a pointer or anchor point.
  */
 public class GuiTooltip extends GuiComponent {
-	private static final int CORNER_RADIUS = 8;
+	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_COMPACT;
 	private static final Padding PADDING = Padding.symmetric(Spacing.SM, Spacing.MD);
 	private static final int MAX_WIDTH = 220;
 
@@ -92,8 +93,7 @@ public class GuiTooltip extends GuiComponent {
 
 		int background = ColorUtil.withAlpha(theme.tooltipBackground(), alpha);
 		int border = ColorUtil.withAlpha(theme.tooltipBorder(), alpha);
-		RoundedRenderer.fill(context, x, y, width, height, CORNER_RADIUS, background);
-		RoundedRenderer.outline(context, x, y, width, height, CORNER_RADIUS, 1, border);
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
 		context.text(font, text, x + PADDING.left(), y + PADDING.top(), ColorUtil.withAlpha(theme.textPrimary(), alpha), false);
 	}
 }
