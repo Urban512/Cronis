@@ -11,7 +11,6 @@ import dev.cronis.widget.WidgetCategory;
 import dev.cronis.widget.WidgetContext;
 import dev.cronis.widget.WidgetPosition;
 import dev.cronis.widget.WidgetSize;
-import dev.cronis.widget.WidgetSurfaceStyle;
 
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +35,7 @@ public final class ClockWidget extends Widget {
 	private float lastScale = Float.NaN;
 
 	public ClockWidget() {
-		super(WIDGET_ID, "Clock", WidgetCategory.PERFORMANCE, WidgetSurfaceStyle.TEXT_ONLY);
+		super(WIDGET_ID, "Clock", WidgetCategory.PERFORMANCE);
 		setAnchor(WidgetAnchor.TOP_LEFT);
 		setPosition(new WidgetPosition(GuiMetrics.SCREEN_MARGIN + 264, GuiMetrics.SCREEN_MARGIN));
 	}
@@ -63,7 +62,7 @@ public final class ClockWidget extends Widget {
 		ClockFormat format = clockFormat();
 		ensureSize(context.font(), format);
 
-		var bounds = resolveBounds(context);
+		var bounds = getInteractionBounds(context);
 		MetricWidgetLayout.renderScaled(
 				context.graphics(),
 				context.font(),

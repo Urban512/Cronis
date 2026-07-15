@@ -12,6 +12,8 @@ import dev.cronis.editor.WidgetOverlayRenderer;
 
 import dev.cronis.editor.WidgetResizeController;
 
+import dev.cronis.editor.WidgetScaleController;
+
 import dev.cronis.editor.WidgetSelectionManager;
 
 import dev.cronis.editor.WidgetSnapEngine;
@@ -262,9 +264,9 @@ public class HudEditorScreen extends GuiScreen implements WidgetContextMenuHost 
 
 		Widget selected = selectionManager.getSelectedOrNull();
 
-		if (selected != null && selected.isManuallyResizable()) {
+		if (selected != null) {
 
-			WidgetBounds selectedBounds = selected.resolveBounds(lastWidgetContext);
+			WidgetBounds selectedBounds = selected.getInteractionBounds(lastWidgetContext);
 
 			WidgetResizeController.Handle handle = resizeController.hitTest(selectedBounds, mouseX, mouseY);
 
@@ -286,7 +288,7 @@ public class HudEditorScreen extends GuiScreen implements WidgetContextMenuHost 
 
 					selectionManager.select(widget);
 
-					WidgetBounds bounds = widget.resolveBounds(lastWidgetContext);
+					WidgetBounds bounds = widget.getInteractionBounds(lastWidgetContext);
 
 					dragController.begin(widget, mouseX, mouseY, bounds);
 
@@ -375,27 +377,28 @@ public class HudEditorScreen extends GuiScreen implements WidgetContextMenuHost 
 
 
 	@Override
-
 	public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
-
 		if (dispatchOverlayMouseScrolled(mouseX, mouseY, scrollX, scrollY)) {
-
 			return true;
-
 		}
-
-
 
 		if (inspectorOpen && isInspectorMouse((int) mouseX, (int) mouseY)) {
-
 			return inspector.mouseScrolled(mouseX, mouseY, scrollX, scrollY) || super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-
 		}
 
-
+		Widget selected = selectionManager.getSelectedOrNull();
+		if (selected != null && !dragController.isActive() && !resizeController.isActive()) {
+			boolean changed = WidgetScaleController.adjustFromScroll(selected, scrollY);
+			if (changed) {
+				if (inspectorOpen) {
+					inspector.syncFromWidget();
+				}
+				widgetManager.notifyLayoutChanged(selected);
+			}
+			return true;
+		}
 
 		return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY);
-
 	}
 
 

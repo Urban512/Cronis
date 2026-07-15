@@ -60,7 +60,7 @@ public final class SpotifyWidget extends Widget {
 	private float lastAppliedScale = Float.NaN;
 
 	public SpotifyWidget() {
-		super(WIDGET_ID, DISPLAY_NAME, WidgetCategory.MEDIA, WidgetSurfaceStyle.CARD);
+		super(WIDGET_ID, DISPLAY_NAME, WidgetCategory.MEDIA);
 		setAnchor(WidgetAnchor.TOP_LEFT);
 		setPosition(new WidgetPosition(GuiMetrics.SCREEN_MARGIN, GuiMetrics.SCREEN_MARGIN + 80));
 	}
@@ -138,7 +138,7 @@ public final class SpotifyWidget extends Widget {
 
 	@Override
 	public void render(WidgetContext context) {
-		WidgetBounds bounds = resolveBounds(context);
+		WidgetBounds bounds = getInteractionBounds(context);
 		GuiGraphicsExtractor graphics = context.graphics();
 		Font font = context.font();
 		GuiTheme theme = context.theme();
@@ -151,13 +151,12 @@ public final class SpotifyWidget extends Widget {
 			pose.scale(scale, scale);
 		}
 
-		int unscaledWidth = cachedPreferredSize != null ? cachedPreferredSize.width() : Math.round(bounds.width() / scale);
-		int unscaledHeight = cachedPreferredSize != null ? cachedPreferredSize.height() : Math.round(bounds.height() / scale);
-
-		WidgetSurface.render(graphics, 0, 0, unscaledWidth, unscaledHeight, theme);
+		int unscaledWidth = cachedPreferredSize != null
+				? cachedPreferredSize.width()
+				: fallbackContentSize().width();
 
 		int contentX = PADDING.left();
-		int contentWidth = unscaledWidth - PADDING.horizontal();
+		int contentWidth = Math.max(0, unscaledWidth - PADDING.horizontal());
 		int textY = PADDING.top();
 
 		if (showStatusRow && !statusRowText.isEmpty()) {

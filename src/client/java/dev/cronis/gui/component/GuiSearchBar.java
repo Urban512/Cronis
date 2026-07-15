@@ -5,6 +5,7 @@ import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.IconManager;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
@@ -23,8 +24,8 @@ public class GuiSearchBar extends GuiComponent {
 	private static final int MAX_WIDTH = 360;
 
 	private final String placeholder;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
-	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
+	private final FadeAnimation focusAnimation = new FadeAnimation(DesignTokens.ANIM_FOCUS);
 	private boolean hovered;
 	private boolean focused;
 
@@ -80,7 +81,17 @@ public class GuiSearchBar extends GuiComponent {
 		int background = ColorUtil.lerp(theme.searchBackground(), theme.sidebarItemHover(), hoverAnimation.getValue() * 0.4f);
 		int border = ColorUtil.lerp(theme.searchBorder(), theme.searchBorderFocused(), focusAnimation.getValue());
 
-		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
+		CardRenderer.draw(
+				context,
+				x,
+				y,
+				width,
+				height,
+				CardRenderer.Style.control(),
+				background,
+				border,
+				focusAnimation.getValue() > 0.35f
+		);
 
 		int iconX = x + Spacing.MD;
 		int iconY = y + (height - ICON_SIZE) / 2;

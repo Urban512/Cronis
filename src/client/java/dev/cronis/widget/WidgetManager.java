@@ -153,7 +153,7 @@ public final class WidgetManager {
 				continue;
 			}
 
-			WidgetBounds bounds = widget.resolveBounds(context);
+			WidgetBounds bounds = widget.getInteractionBounds(context);
 			if (!bounds.intersectsViewport(screenWidth, screenHeight)) {
 				continue;
 			}

@@ -83,7 +83,7 @@ public final class WidgetOverlayRenderer {
 				continue;
 			}
 
-			WidgetBounds bounds = widget.resolveBounds(context);
+			WidgetBounds bounds = widget.getInteractionBounds(context);
 			drawOutline(graphics, bounds, OUTLINE_THICKNESS, boundsColor);
 		}
 	}
@@ -99,12 +99,10 @@ public final class WidgetOverlayRenderer {
 			return;
 		}
 
-		WidgetBounds bounds = selected.resolveBounds(context);
+		WidgetBounds bounds = selected.getInteractionBounds(context);
 		int selectionColor = theme.accent();
 		drawOutline(graphics, bounds, SELECTION_OUTLINE_THICKNESS, selectionColor);
-		if (selected.isManuallyResizable()) {
-			renderHandles(graphics, bounds, theme);
-		}
+		renderHandles(graphics, bounds, theme);
 	}
 
 	private void renderHandles(GuiGraphicsExtractor graphics, WidgetBounds bounds, GuiTheme theme) {

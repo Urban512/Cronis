@@ -8,6 +8,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Cached access to Cronis asset identifiers.
+ * <p>
+ * Icon pack contract: PNG icons live under {@code assets/cronis/icons/} and are
+ * resolved via {@link #icon(String)} (for example {@code settings.png} →
+ * {@code cronis:icons/settings.png}). Future icon packs should keep the same
+ * file names under a pack-owned root and continue resolving through this API so
+ * UI call sites do not hardcode resource paths.
+ * <p>
+ * Related folders: {@code logos/}, {@code textures/}, {@code illustrations/}.
  */
 public final class AssetManager {
 	private static final String ICONS = "icons/";

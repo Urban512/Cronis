@@ -4,6 +4,7 @@ import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
@@ -19,8 +20,8 @@ public class GuiSidebarItem extends GuiComponent {
 	private static final int ICON_SIZE = 5;
 
 	private final String label;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(12f);
-	private final FadeAnimation selectionAnimation = new FadeAnimation(10f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_PANEL);
+	private final FadeAnimation selectionAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
 	private boolean selected;
 	private boolean hovered;
 	private Consumer<GuiSidebarItem> onSelect;

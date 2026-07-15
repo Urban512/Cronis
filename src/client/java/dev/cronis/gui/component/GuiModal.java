@@ -5,6 +5,7 @@ import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.RenderUtil;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
@@ -22,7 +23,7 @@ public class GuiModal extends GuiComponent {
 
 	private final String title;
 	private final String message;
-	private final FadeAnimation openAnimation = new FadeAnimation(10f);
+	private final FadeAnimation openAnimation = new FadeAnimation(DesignTokens.ANIM_OPEN);
 	private final GuiButton confirmButton = new GuiButton("Confirm");
 	private final GuiButton cancelButton = new GuiButton("Cancel");
 	private GuiComponent content;

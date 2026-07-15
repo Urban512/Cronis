@@ -122,8 +122,9 @@ public final class WidgetInspectorPanel extends GuiComponent {
 		}
 
 		header.setTitle(widget.getDisplayName());
-		widthRow.setVisible(widget.isManuallyResizable());
-		heightRow.setVisible(widget.isManuallyResizable());
+		boolean freeform = widget.supportsFreeformSize();
+		widthRow.setVisible(freeform);
+		heightRow.setVisible(freeform);
 		rebuildSettingsSection();
 		syncFromWidget();
 	}
@@ -193,8 +194,9 @@ public final class WidgetInspectorPanel extends GuiComponent {
 		}
 
 		scaleSlider.setValueSilent(boundWidget.getScale());
-		widthRow.setVisible(boundWidget.isManuallyResizable());
-		heightRow.setVisible(boundWidget.isManuallyResizable());
+		boolean freeform = boundWidget.supportsFreeformSize();
+		widthRow.setVisible(freeform);
+		heightRow.setVisible(freeform);
 
 		if (!positionXField.isEditing()) {
 			positionXField.applyCommittedValue(formatNumber(boundWidget.getPosition().offsetX()));
@@ -202,10 +204,10 @@ public final class WidgetInspectorPanel extends GuiComponent {
 		if (!positionYField.isEditing()) {
 			positionYField.applyCommittedValue(formatNumber(boundWidget.getPosition().offsetY()));
 		}
-		if (!widthField.isEditing()) {
+		if (freeform && !widthField.isEditing()) {
 			widthField.applyCommittedValue(Integer.toString(boundWidget.getWidth()));
 		}
-		if (!heightField.isEditing()) {
+		if (freeform && !heightField.isEditing()) {
 			heightField.applyCommittedValue(Integer.toString(boundWidget.getHeight()));
 		}
 	}
@@ -231,15 +233,7 @@ public final class WidgetInspectorPanel extends GuiComponent {
 		scaleSlider.setOnChange(value -> {
 			if (!syncing && boundWidget != null) {
 				boundWidget.setScale(value);
-				if (!boundWidget.isManuallyResizable()) {
-					boundWidget.applyPreferredSize();
-				} else {
-					WidgetSize preferred = boundWidget.getPreferredSize();
-					boundWidget.setSize(
-							Math.max(0, Math.round(preferred.width() * boundWidget.getScale())),
-							Math.max(0, Math.round(preferred.height() * boundWidget.getScale()))
-					);
-				}
+				boundWidget.applyPreferredSize();
 			}
 		});
 		scaleSlider.setOnRelease(value -> {
@@ -283,7 +277,7 @@ public final class WidgetInspectorPanel extends GuiComponent {
 	}
 
 	private void commitWidth(String value) {
-		if (syncing || boundWidget == null) {
+		if (syncing || boundWidget == null || !boundWidget.supportsFreeformSize()) {
 			return;
 		}
 
@@ -297,7 +291,7 @@ public final class WidgetInspectorPanel extends GuiComponent {
 	}
 
 	private void commitHeight(String value) {
-		if (syncing || boundWidget == null) {
+		if (syncing || boundWidget == null || !boundWidget.supportsFreeformSize()) {
 			return;
 		}
 

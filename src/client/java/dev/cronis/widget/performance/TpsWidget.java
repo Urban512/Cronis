@@ -11,7 +11,6 @@ import dev.cronis.widget.WidgetCategory;
 import dev.cronis.widget.WidgetContext;
 import dev.cronis.widget.WidgetPosition;
 import dev.cronis.widget.WidgetSize;
-import dev.cronis.widget.WidgetSurfaceStyle;
 
 /**
  * Displays a smoothed client-side TPS estimate.
@@ -30,7 +29,7 @@ public final class TpsWidget extends Widget {
 	private float lastScale = Float.NaN;
 
 	public TpsWidget() {
-		super(WIDGET_ID, "TPS", WidgetCategory.PERFORMANCE, WidgetSurfaceStyle.TEXT_ONLY);
+		super(WIDGET_ID, "TPS", WidgetCategory.PERFORMANCE);
 		setAnchor(WidgetAnchor.TOP_LEFT);
 		setPosition(new WidgetPosition(GuiMetrics.SCREEN_MARGIN + 176, GuiMetrics.SCREEN_MARGIN));
 	}
@@ -57,7 +56,7 @@ public final class TpsWidget extends Widget {
 	public void render(WidgetContext context) {
 		ensureSize(context.font());
 
-		var bounds = resolveBounds(context);
+		var bounds = getInteractionBounds(context);
 		MetricWidgetLayout.renderScaled(
 				context.graphics(),
 				context.font(),

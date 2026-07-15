@@ -3,10 +3,12 @@ package dev.cronis.gui.component;
 import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import org.joml.Matrix3x2fStack;
 
 /**
  * Interactive component for triggering a single primary action.
@@ -17,7 +19,7 @@ public class GuiButton extends GuiComponent {
 	private static final int MIN_WIDTH = 88;
 
 	private String label;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
 	private Runnable onClick;
 	private boolean hovered;
 
@@ -70,12 +72,31 @@ public class GuiButton extends GuiComponent {
 	@Override
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
 		var theme = ThemeManager.get();
-		int background = ColorUtil.lerp(theme.buttonBackground(), theme.buttonBackgroundHover(), hoverAnimation.getValue());
-		int border = ColorUtil.lerp(theme.buttonBorder(), theme.accent(), hoverAnimation.getValue() * 0.5f);
+		float hover = hoverAnimation.getValue();
+		int background = ColorUtil.lerp(theme.buttonBackground(), theme.buttonBackgroundHover(), hover);
+		int border = ColorUtil.lerp(theme.buttonBorder(), theme.accent(), hover * 0.5f);
 		int textColor = enabled ? theme.buttonText() : theme.controlDisabled();
+		if (enabled && hover > 0f) {
+			background = ColorUtil.multiplyAlpha(
+					background,
+					1f - (1f - DesignTokens.HOVER_OPACITY) * hover
+			);
+		}
 
-		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
+		boolean emphasized = hover > 0.35f;
+		float scale = 1f + (DesignTokens.HOVER_SCALE - 1f) * hover;
+		Matrix3x2fStack pose = context.pose();
+		pose.pushMatrix();
+		if (scale != 1f) {
+			float cx = x + width * 0.5f;
+			float cy = y + height * 0.5f;
+			pose.translate(cx, cy);
+			pose.scale(scale, scale);
+			pose.translate(-cx, -cy);
+		}
+		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border, emphasized);
 		int textX = x + (width - font.width(label)) / 2;
 		context.text(font, label, textX, y + (height - font.lineHeight) / 2, textColor, false);
+		pose.popMatrix();
 	}
 }

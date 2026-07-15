@@ -7,6 +7,10 @@ import dev.cronis.widget.WidgetSize;
 
 /**
  * Handles corner resize interactions for HUD widgets.
+ * <p>
+ * Scale-only widgets (default) use OBS-style proportional scaling: dragging a
+ * corner changes {@link Widget#getScale()} while keeping the opposite corner fixed.
+ * Freeform widgets retain independent width/height editing.
  */
 public final class WidgetResizeController {
 	public static final int HANDLE_SIZE = 8;
@@ -28,6 +32,7 @@ public final class WidgetResizeController {
 	private int startMouseX;
 	private int startMouseY;
 	private WidgetBounds startBounds;
+	private float startScale = Widget.SCALE_DEFAULT;
 	private boolean aspectRatioLocked;
 	private float lockedAspectRatio = 1f;
 
@@ -92,6 +97,7 @@ public final class WidgetResizeController {
 		this.startMouseX = mouseX;
 		this.startMouseY = mouseY;
 		this.startBounds = startBounds;
+		this.startScale = widget.getScale();
 		this.lockedAspectRatio = startBounds.width() / (float) Math.max(1, startBounds.height());
 	}
 
@@ -103,6 +109,11 @@ public final class WidgetResizeController {
 	 */
 	public void update(WidgetEditorContext editorContext, WidgetSnapEngine snapEngine) {
 		if (!active || widget == null || handle == null) {
+			return;
+		}
+
+		if (!widget.supportsFreeformSize()) {
+			updateScaleOnly(editorContext);
 			return;
 		}
 
@@ -123,6 +134,47 @@ public final class WidgetResizeController {
 		active = false;
 		widget = null;
 		handle = null;
+	}
+
+	private void updateScaleOnly(WidgetEditorContext editorContext) {
+		int mouseX = editorContext.mouseX();
+		int mouseY = editorContext.mouseY();
+
+		int pivotX = pivotX(startBounds, handle);
+		int pivotY = pivotY(startBounds, handle);
+
+		float startW = Math.max(1f, startBounds.width());
+		float startH = Math.max(1f, startBounds.height());
+
+		float desiredW = Math.abs(mouseX - pivotX);
+		float desiredH = Math.abs(mouseY - pivotY);
+		float ratio = Math.max(desiredW / startW, desiredH / startH);
+
+		float newScale = Widget.snapScale(startScale * ratio, Widget.SCALE_STEP_FINE);
+		WidgetScaleController.applyScalePreservingPivot(
+				widget,
+				newScale,
+				Widget.SCALE_STEP_FINE,
+				handle,
+				pivotX,
+				pivotY,
+				editorContext.screenWidth(),
+				editorContext.screenHeight()
+		);
+	}
+
+	private static int pivotX(WidgetBounds bounds, Handle handle) {
+		return switch (handle) {
+			case TOP_LEFT, BOTTOM_LEFT -> bounds.right();
+			case TOP_RIGHT, BOTTOM_RIGHT -> bounds.x();
+		};
+	}
+
+	private static int pivotY(WidgetBounds bounds, Handle handle) {
+		return switch (handle) {
+			case TOP_LEFT, TOP_RIGHT -> bounds.bottom();
+			case BOTTOM_LEFT, BOTTOM_RIGHT -> bounds.y();
+		};
 	}
 
 	private WidgetBounds resizeToMouse(int mouseX, int mouseY) {

@@ -5,6 +5,7 @@ import dev.cronis.gui.animation.ValueAnimation;
 import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.input.CharacterEvent;
 import net.minecraft.client.input.KeyEvent;
@@ -22,9 +23,9 @@ public class GuiToggle extends GuiComponent implements Focusable {
 	private static final int TRACK_HEIGHT = 22;
 	private static final int THUMB_SIZE = 16;
 
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
-	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
-	private final ValueAnimation thumbAnimation = new ValueAnimation(14f, 0f, 1f, 0f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
+	private final FadeAnimation focusAnimation = new FadeAnimation(DesignTokens.ANIM_FOCUS);
+	private final ValueAnimation thumbAnimation = new ValueAnimation(DesignTokens.ANIM_PANEL, 0f, 1f, 0f);
 	private boolean on;
 	private boolean hovered;
 	private boolean focused;

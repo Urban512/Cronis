@@ -46,6 +46,17 @@ public final class GuiMetrics {
 	public static final float TEXT_SCALE_CAPTION = DesignTokens.TEXT_SCALE_CAPTION;
 	public static final float TEXT_SCALE_BODY = DesignTokens.TEXT_SCALE_BODY;
 	public static final float TEXT_SCALE_VALUE = DesignTokens.TEXT_SCALE_VALUE;
+	public static final float TEXT_SCALE_PAGE = DesignTokens.TEXT_SCALE_PAGE;
+	public static final float TEXT_SCALE_SECTION = DesignTokens.TEXT_SCALE_SECTION;
+	public static final float TEXT_SCALE_TITLE = DesignTokens.TEXT_SCALE_TITLE;
+
+	public static final float ANIM_HOVER = DesignTokens.ANIM_HOVER;
+	public static final float ANIM_FOCUS = DesignTokens.ANIM_FOCUS;
+	public static final float ANIM_PANEL = DesignTokens.ANIM_PANEL;
+	public static final float ANIM_OPEN = DesignTokens.ANIM_OPEN;
+
+	public static final float HOVER_SCALE = DesignTokens.HOVER_SCALE;
+	public static final float BORDER_OPACITY = DesignTokens.BORDER_OPACITY;
 
 	public static final int PROGRESS_HEIGHT = DesignTokens.PROGRESS_HEIGHT;
 

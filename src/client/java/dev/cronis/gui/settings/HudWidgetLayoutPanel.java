@@ -56,7 +56,7 @@ public final class HudWidgetLayoutPanel extends GuiComponent {
 	private boolean syncing;
 
 	public HudWidgetLayoutPanel(String title) {
-		this.titleLabel = GuiLabel.heading(title);
+		this.titleLabel = GuiLabel.title(title);
 		addChild(titleLabel);
 		addChild(visibilityRow);
 		addChild(scaleRow);
@@ -72,14 +72,13 @@ public final class HudWidgetLayoutPanel extends GuiComponent {
 		boundWidget = widget;
 		if (widget == null) {
 			settingsPanel.bind(null);
-			widthRow.setVisible(false);
-			heightRow.setVisible(false);
 			return;
 		}
 
 		titleLabel.setText(widget.getDisplayName());
-		widthRow.setVisible(widget.isManuallyResizable());
-		heightRow.setVisible(widget.isManuallyResizable());
+		boolean freeform = widget.supportsFreeformSize();
+		widthRow.setVisible(freeform);
+		heightRow.setVisible(freeform);
 		settingsPanel.bind(widget.getSettings());
 		syncFromWidget();
 	}
@@ -172,8 +171,9 @@ public final class HudWidgetLayoutPanel extends GuiComponent {
 
 			visibilityToggle.setOn(boundWidget.isVisible());
 			scaleSlider.setValueSilent(boundWidget.getScale());
-			widthRow.setVisible(boundWidget.isManuallyResizable());
-			heightRow.setVisible(boundWidget.isManuallyResizable());
+			boolean freeform = boundWidget.supportsFreeformSize();
+			widthRow.setVisible(freeform);
+			heightRow.setVisible(freeform);
 
 			if (!positionXField.isEditing()) {
 				positionXField.applyCommittedValue(formatNumber(boundWidget.getPosition().offsetX()));
@@ -181,10 +181,10 @@ public final class HudWidgetLayoutPanel extends GuiComponent {
 			if (!positionYField.isEditing()) {
 				positionYField.applyCommittedValue(formatNumber(boundWidget.getPosition().offsetY()));
 			}
-			if (!widthField.isEditing()) {
+			if (freeform && !widthField.isEditing()) {
 				widthField.applyCommittedValue(Integer.toString(boundWidget.getWidth()));
 			}
-			if (!heightField.isEditing()) {
+			if (freeform && !heightField.isEditing()) {
 				heightField.applyCommittedValue(Integer.toString(boundWidget.getHeight()));
 			}
 
@@ -238,7 +238,7 @@ public final class HudWidgetLayoutPanel extends GuiComponent {
 	}
 
 	private void commitWidth(String value) {
-		if (syncing || boundWidget == null || !boundWidget.isManuallyResizable()) {
+		if (syncing || boundWidget == null || !boundWidget.supportsFreeformSize()) {
 			return;
 		}
 
@@ -252,7 +252,7 @@ public final class HudWidgetLayoutPanel extends GuiComponent {
 	}
 
 	private void commitHeight(String value) {
-		if (syncing || boundWidget == null || !boundWidget.isManuallyResizable()) {
+		if (syncing || boundWidget == null || !boundWidget.supportsFreeformSize()) {
 			return;
 		}
 

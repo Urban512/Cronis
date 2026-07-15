@@ -11,7 +11,6 @@ import dev.cronis.widget.WidgetCategory;
 import dev.cronis.widget.WidgetContext;
 import dev.cronis.widget.WidgetPosition;
 import dev.cronis.widget.WidgetSize;
-import dev.cronis.widget.WidgetSurfaceStyle;
 
 /**
  * Displays the current client frame rate.
@@ -31,7 +30,7 @@ public final class FpsWidget extends Widget {
 	private float lastScale = Float.NaN;
 
 	public FpsWidget() {
-		super(WIDGET_ID, "FPS", WidgetCategory.PERFORMANCE, WidgetSurfaceStyle.TEXT_ONLY);
+		super(WIDGET_ID, "FPS", WidgetCategory.PERFORMANCE);
 		setAnchor(WidgetAnchor.TOP_LEFT);
 		setPosition(new WidgetPosition(GuiMetrics.SCREEN_MARGIN, GuiMetrics.SCREEN_MARGIN));
 	}
@@ -59,7 +58,7 @@ public final class FpsWidget extends Widget {
 		boolean showLabel = shouldShowLabel();
 		ensureSize(context.font(), showLabel);
 
-		var bounds = resolveBounds(context);
+		var bounds = getInteractionBounds(context);
 		MetricWidgetLayout.renderScaled(
 				context.graphics(),
 				context.font(),

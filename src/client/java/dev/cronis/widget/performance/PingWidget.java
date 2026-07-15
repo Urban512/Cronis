@@ -11,7 +11,6 @@ import dev.cronis.widget.WidgetCategory;
 import dev.cronis.widget.WidgetContext;
 import dev.cronis.widget.WidgetPosition;
 import dev.cronis.widget.WidgetSize;
-import dev.cronis.widget.WidgetSurfaceStyle;
 
 /**
  * Displays the current server latency.
@@ -31,7 +30,7 @@ public final class PingWidget extends Widget {
 	private float lastScale = Float.NaN;
 
 	public PingWidget() {
-		super(WIDGET_ID, "Ping", WidgetCategory.PERFORMANCE, WidgetSurfaceStyle.TEXT_ONLY);
+		super(WIDGET_ID, "Ping", WidgetCategory.PERFORMANCE);
 		setAnchor(WidgetAnchor.TOP_LEFT);
 		setPosition(new WidgetPosition(GuiMetrics.SCREEN_MARGIN + 88, GuiMetrics.SCREEN_MARGIN));
 	}
@@ -58,7 +57,7 @@ public final class PingWidget extends Widget {
 		boolean showLabel = shouldShowLabel();
 		ensureSize(context.font(), showLabel);
 
-		var bounds = resolveBounds(context);
+		var bounds = getInteractionBounds(context);
 		MetricWidgetLayout.renderScaled(
 				context.graphics(),
 				context.font(),

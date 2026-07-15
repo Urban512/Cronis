@@ -5,6 +5,7 @@ import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.input.CharacterEvent;
@@ -23,9 +24,9 @@ public class GuiCheckbox extends GuiComponent implements Focusable {
 	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CHECKBOX;
 
 	private final String label;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
-	private final FadeAnimation checkedAnimation = new FadeAnimation(12f);
-	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
+	private final FadeAnimation checkedAnimation = new FadeAnimation(DesignTokens.ANIM_PANEL);
+	private final FadeAnimation focusAnimation = new FadeAnimation(DesignTokens.ANIM_FOCUS);
 	private boolean checked;
 	private boolean hovered;
 	private boolean focused;
@@ -123,7 +124,17 @@ public class GuiCheckbox extends GuiComponent implements Focusable {
 		int background = ColorUtil.lerp(theme.checkboxBackground(), theme.controlHover(), hoverAnimation.getValue() * 0.35f);
 		int border = ColorUtil.lerp(theme.checkboxBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
 
-		CardRenderer.draw(context, boxX, boxY, BOX_SIZE, BOX_SIZE, CardRenderer.Style.control(), background, border);
+		CardRenderer.draw(
+				context,
+				boxX,
+				boxY,
+				BOX_SIZE,
+				BOX_SIZE,
+				CardRenderer.Style.checkbox(),
+				background,
+				border,
+				focusAnimation.getValue() > 0.35f
+		);
 
 		float mark = checkedAnimation.getValue();
 		if (mark > 0f) {

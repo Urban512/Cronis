@@ -2,13 +2,14 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.RenderUtil;
-import dev.cronis.gui.theme.GuiMetrics;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import org.joml.Matrix3x2fStack;
 
 /**
- * Non-interactive text display component.
+ * Non-interactive text display with a shared typography hierarchy.
  */
 public class GuiLabel extends GuiComponent {
 	private String text;
@@ -18,9 +19,15 @@ public class GuiLabel extends GuiComponent {
 	private final LabelStyle style;
 
 	public enum LabelStyle {
+		PAGE,
+		SECTION,
+		TITLE,
 		BODY,
-		HEADING,
-		SECTION
+		CAPTION,
+		MUTED,
+		/** @deprecated Prefer {@link #TITLE}. */
+		@Deprecated
+		HEADING
 	}
 
 	public GuiLabel(String text, int color) {
@@ -48,11 +55,27 @@ public class GuiLabel extends GuiComponent {
 	}
 
 	public static GuiLabel muted(String text) {
-		return new GuiLabel(text, ThemeManager.get().textMuted());
+		return new GuiLabel(text, ThemeManager.get().textMuted(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.MUTED);
 	}
 
+	public static GuiLabel caption(String text) {
+		return new GuiLabel(text, ThemeManager.get().textSecondary(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.CAPTION);
+	}
+
+	public static GuiLabel page(String text) {
+		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.PAGE);
+	}
+
+	public static GuiLabel title(String text) {
+		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.TITLE);
+	}
+
+	/**
+	 * @deprecated Prefer {@link #title(String)}.
+	 */
+	@Deprecated
 	public static GuiLabel heading(String text) {
-		return new GuiLabel(text, ThemeManager.get().textPrimary(), RenderUtil.TextAlignment.LEFT, false, LabelStyle.HEADING);
+		return title(text);
 	}
 
 	public static GuiLabel section(String text) {
@@ -74,19 +97,71 @@ public class GuiLabel extends GuiComponent {
 
 	@Override
 	public int getPreferredHeight(int availableWidth) {
-		return switch (style) {
-			case SECTION -> 9 + Spacing.MD;
-			case HEADING -> 9 + Spacing.SM;
-			case BODY -> 9;
+		int line = Math.max(1, Math.round(9 * scaleFor(style)));
+		return switch (resolvedStyle()) {
+			case PAGE -> line + Spacing.MD;
+			case SECTION -> line + Spacing.MD;
+			case TITLE, HEADING -> line + Spacing.SM;
+			case BODY -> line;
+			case CAPTION, MUTED -> line;
 		};
 	}
 
 	@Override
 	protected void renderComponent(GuiGraphicsExtractor context, Font font) {
-		int textY = switch (style) {
-			case SECTION, HEADING -> y + Spacing.XS;
-			case BODY -> y;
+		LabelStyle resolved = resolvedStyle();
+		int textY = switch (resolved) {
+			case PAGE, SECTION, TITLE, HEADING -> y + Spacing.XS;
+			case BODY, CAPTION, MUTED -> y;
 		};
-		RenderUtil.drawAlignedText(context, font, text, x, textY, width, color, alignment, shadow);
+		float scale = scaleFor(resolved);
+		drawScaledAlignedText(context, font, text, x, textY, width, color, alignment, shadow, scale);
+	}
+
+	private LabelStyle resolvedStyle() {
+		return style == LabelStyle.HEADING ? LabelStyle.TITLE : style;
+	}
+
+	private static float scaleFor(LabelStyle style) {
+		return switch (style) {
+			case PAGE -> DesignTokens.TEXT_SCALE_PAGE;
+			case SECTION -> DesignTokens.TEXT_SCALE_SECTION;
+			case TITLE, HEADING -> DesignTokens.TEXT_SCALE_TITLE;
+			case BODY -> DesignTokens.TEXT_SCALE_BODY;
+			case CAPTION -> DesignTokens.TEXT_SCALE_CAPTION;
+			case MUTED -> DesignTokens.TEXT_SCALE_MUTED;
+		};
+	}
+
+	private static void drawScaledAlignedText(
+			GuiGraphicsExtractor context,
+			Font font,
+			String text,
+			int x,
+			int y,
+			int width,
+			int color,
+			RenderUtil.TextAlignment alignment,
+			boolean shadow,
+			float scale
+	) {
+		int textWidth = Math.round(font.width(text) * scale);
+		int drawX = switch (alignment) {
+			case LEFT -> x;
+			case CENTER -> x + Math.max(0, (width - textWidth) / 2);
+			case RIGHT -> x + Math.max(0, width - textWidth);
+		};
+
+		if (scale == 1.0f) {
+			context.text(font, text, drawX, y, color, shadow);
+			return;
+		}
+
+		Matrix3x2fStack pose = context.pose();
+		pose.pushMatrix();
+		pose.translate(drawX, y);
+		pose.scale(scale, scale);
+		context.text(font, text, 0, 0, color, shadow);
+		pose.popMatrix();
 	}
 }

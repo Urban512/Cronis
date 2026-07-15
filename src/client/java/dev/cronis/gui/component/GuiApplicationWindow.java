@@ -2,6 +2,7 @@ package dev.cronis.gui.component;
 
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
+import dev.cronis.gui.animation.FadeAnimation;
 import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
@@ -14,7 +15,7 @@ public class GuiApplicationWindow extends GuiWindow {
 	private final GuiHeader header = new GuiHeader();
 	private final GuiSidebar sidebar = new GuiSidebar();
 	private final GuiContentPanel contentPanel = new GuiContentPanel();
-	private final dev.cronis.gui.animation.FadeAnimation openAnimation = new dev.cronis.gui.animation.FadeAnimation(8f);
+	private final FadeAnimation openAnimation = new FadeAnimation(DesignTokens.ANIM_OPEN);
 
 	public GuiApplicationWindow() {
 		super("", GuiWindowStyle.defaults(), new dev.cronis.gui.render.BlurRenderer());

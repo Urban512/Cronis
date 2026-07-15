@@ -6,6 +6,7 @@ import dev.cronis.gui.layout.Layout;
 import dev.cronis.gui.layout.Padding;
 import dev.cronis.gui.render.RenderUtil;
 import dev.cronis.gui.render.ScrollbarRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.util.GuiBounds;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -23,7 +24,7 @@ public class GuiScrollPanel extends GuiComponent {
 	private float scrollTarget;
 	private float maxScroll;
 	private int contentHeight;
-	private final FadeAnimation scrollbarHoverAnimation = new FadeAnimation(10f);
+	private final FadeAnimation scrollbarHoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
 	private boolean scrollbarHovered;
 
 	public GuiScrollPanel(Layout layout) {

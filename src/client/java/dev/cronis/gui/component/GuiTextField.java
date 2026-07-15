@@ -5,6 +5,7 @@ import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.input.CharacterEvent;
@@ -25,8 +26,8 @@ public class GuiTextField extends GuiComponent implements Focusable {
 
 	private final String placeholder;
 	private final int maxLength;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
-	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
+	private final FadeAnimation focusAnimation = new FadeAnimation(DesignTokens.ANIM_FOCUS);
 	private final StringBuilder text = new StringBuilder();
 	private boolean hovered;
 	private boolean focused;
@@ -182,7 +183,17 @@ public class GuiTextField extends GuiComponent implements Focusable {
 		int background = ColorUtil.lerp(theme.controlBackground(), theme.controlHover(), hoverAnimation.getValue() * 0.35f);
 		int border = ColorUtil.lerp(theme.controlBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
 
-		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
+		CardRenderer.draw(
+				context,
+				x,
+				y,
+				width,
+				height,
+				CardRenderer.Style.control(),
+				background,
+				border,
+				focusAnimation.getValue() > 0.35f
+		);
 
 		int textY = y + (height - font.lineHeight) / 2;
 		if (text.isEmpty()) {

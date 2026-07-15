@@ -51,7 +51,7 @@ public final class WidgetSelectionManager {
 				continue;
 			}
 
-			WidgetBounds bounds = widget.resolveBounds(context);
+			WidgetBounds bounds = widget.getInteractionBounds(context);
 			if (bounds.contains(mouseX, mouseY)) {
 				return Optional.of(widget);
 			}
@@ -61,16 +61,16 @@ public final class WidgetSelectionManager {
 	}
 
 	/**
-	 * Resolves the selected widget's current bounds.
+	 * Resolves the selected widget's current interaction bounds.
 	 *
 	 * @param context viewport context
-	 * @return optional resolved bounds
+	 * @return optional interaction bounds
 	 */
 	public Optional<WidgetBounds> selectedBounds(WidgetContext context) {
 		if (selected == null) {
 			return Optional.empty();
 		}
 
-		return Optional.of(selected.resolveBounds(context));
+		return Optional.of(selected.getInteractionBounds(context));
 	}
 }

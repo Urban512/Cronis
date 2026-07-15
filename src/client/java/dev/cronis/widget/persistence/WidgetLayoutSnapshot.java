@@ -42,6 +42,9 @@ public record WidgetLayoutSnapshot(
 
 	/**
 	 * Applies this snapshot to the provided widget.
+	 * <p>
+	 * For scale-only widgets, {@code scale} is authoritative and size is derived
+	 * via {@link Widget#applyPreferredSize()}. Freeform widgets restore size.
 	 *
 	 * @param widget target widget
 	 */
@@ -54,6 +57,10 @@ public record WidgetLayoutSnapshot(
 		widget.setVisible(visible);
 		widget.setPosition(position);
 		widget.setScale(scale);
-		widget.setSize(size.width(), size.height());
+		if (widget.supportsFreeformSize()) {
+			widget.setSize(size.width(), size.height());
+		} else {
+			widget.applyPreferredSize();
+		}
 	}
 }

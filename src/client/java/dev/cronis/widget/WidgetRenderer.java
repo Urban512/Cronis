@@ -17,7 +17,7 @@ public final class WidgetRenderer {
 			return;
 		}
 
-		WidgetBounds bounds = widget.resolveBounds(context);
+		WidgetBounds bounds = widget.getInteractionBounds(context);
 		if (!bounds.intersectsViewport(context.screenWidth(), context.screenHeight())) {
 			return;
 		}

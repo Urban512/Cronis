@@ -113,7 +113,7 @@ public final class WidgetSnapEngine {
 				continue;
 			}
 
-			WidgetBounds bounds = widget.resolveBounds(context);
+			WidgetBounds bounds = widget.getInteractionBounds(context);
 			if (count + 3 > xTargets.length) {
 				break;
 			}
@@ -148,7 +148,7 @@ public final class WidgetSnapEngine {
 				continue;
 			}
 
-			WidgetBounds bounds = widget.resolveBounds(context);
+			WidgetBounds bounds = widget.getInteractionBounds(context);
 			if (count + 3 > yTargets.length) {
 				break;
 			}

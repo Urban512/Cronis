@@ -5,6 +5,7 @@ import dev.cronis.gui.layout.Padding;
 import dev.cronis.gui.layout.Spacing;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
@@ -18,7 +19,7 @@ public class GuiTooltip extends GuiComponent {
 	private static final Padding PADDING = Padding.symmetric(Spacing.SM, Spacing.MD);
 	private static final int MAX_WIDTH = 220;
 
-	private final FadeAnimation visibilityAnimation = new FadeAnimation(14f);
+	private final FadeAnimation visibilityAnimation = new FadeAnimation(DesignTokens.ANIM_PANEL);
 	private String text = "";
 	private boolean active;
 

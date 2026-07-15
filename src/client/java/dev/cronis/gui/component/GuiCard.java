@@ -17,7 +17,7 @@ public class GuiCard extends GuiComponent {
 
 	private final String title;
 	private final String description;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIMATION_NORMAL);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
 	private boolean hovered;
 
 	public GuiCard(String title, String description) {
@@ -55,7 +55,8 @@ public class GuiCard extends GuiComponent {
 				height,
 				CardRenderer.Style.card(),
 				theme.cardBackground(),
-				ColorUtil.lerp(theme.cardBorder(), theme.cardHoverBorder(), hover)
+				ColorUtil.lerp(theme.cardBorder(), theme.cardHoverBorder(), hover),
+				hover > 0.35f
 		);
 
 		int textX = x + DesignTokens.CARD_PADDING.left();

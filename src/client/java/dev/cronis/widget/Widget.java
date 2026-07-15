@@ -8,19 +8,20 @@ import java.util.Objects;
 /**
  * Base type for every independent Cronis HUD widget.
  * <p>
- * Widgets only implement widget-specific update, render, and sizing logic.
- * Placement, visibility, and lifecycle orchestration are handled by the framework.
+ * Visual rendering and interaction bounds are independent. HUD widgets never
+ * draw card chrome; selection, drag, and resize use {@link #getInteractionBounds}.
  */
 public abstract class Widget {
-	public static final float SCALE_MIN = 0.50f;
-	public static final float SCALE_MAX = 2.00f;
+	public static final float SCALE_MIN = 0.25f;
+	public static final float SCALE_MAX = 3.00f;
 	public static final float SCALE_STEP = 0.05f;
+	public static final float SCALE_STEP_FINE = 0.01f;
+	public static final float SCALE_STEP_COARSE = 0.10f;
 	public static final float SCALE_DEFAULT = 1.00f;
 
 	private final String id;
 	private final String displayName;
 	private final WidgetCategory category;
-	private final WidgetSurfaceStyle surfaceStyle;
 	private WidgetAnchor anchor = WidgetAnchor.TOP_LEFT;
 	private WidgetPosition position = WidgetPosition.zero();
 	private int width;
@@ -31,14 +32,9 @@ public abstract class Widget {
 	private SettingGroup settingsGroup;
 
 	protected Widget(String id, String displayName, WidgetCategory category) {
-		this(id, displayName, category, WidgetSurfaceStyle.CARD);
-	}
-
-	protected Widget(String id, String displayName, WidgetCategory category, WidgetSurfaceStyle surfaceStyle) {
 		this.id = Objects.requireNonNull(id, "id");
 		this.displayName = Objects.requireNonNull(displayName, "displayName");
 		this.category = Objects.requireNonNull(category, "category");
-		this.surfaceStyle = Objects.requireNonNull(surfaceStyle, "surfaceStyle");
 
 		WidgetSize preferredSize = getPreferredSize();
 		this.width = Math.max(0, Math.round(preferredSize.width() * scale));
@@ -57,16 +53,23 @@ public abstract class Widget {
 		return category;
 	}
 
-	public WidgetSurfaceStyle getSurfaceStyle() {
-		return surfaceStyle;
+	/**
+	 * Returns whether the user may resize this widget by dragging corner handles.
+	 * <p>
+	 * Always {@code true}. Handles adjust {@link #getScale()} for ordinary widgets.
+	 */
+	public boolean isManuallyResizable() {
+		return true;
 	}
 
 	/**
-	 * Returns whether the user may resize this widget by dragging corners.
-	 * Text-only widgets use scale instead of manual width/height.
+	 * Returns whether this widget supports freeform Width/Height editing.
+	 * <p>
+	 * Ordinary HUD widgets are scale-only ({@code false}). Future map/inventory
+	 * widgets may override to {@code true}.
 	 */
-	public boolean isManuallyResizable() {
-		return surfaceStyle == WidgetSurfaceStyle.CARD;
+	public boolean supportsFreeformSize() {
+		return false;
 	}
 
 	public WidgetAnchor getAnchor() {
@@ -122,6 +125,13 @@ public abstract class Widget {
 		return height;
 	}
 
+	/**
+	 * Sets the derived screen size used for interaction bounds.
+	 * <p>
+	 * For scale-only widgets ({@link #supportsFreeformSize()} {@code false}),
+	 * prefer {@link #setScaleAndApplyLayout} / {@link #applyPreferredSize()} so
+	 * size stays {@code preferred × scale}.
+	 */
 	public void setSize(int width, int height) {
 		this.width = Math.max(0, width);
 		this.height = Math.max(0, height);
@@ -137,18 +147,54 @@ public abstract class Widget {
 	 * @param scale requested scale
 	 */
 	public void setScale(float scale) {
-		this.scale = snapScale(scale);
+		setScale(scale, SCALE_STEP);
 	}
 
 	/**
-	 * Snaps a raw scale value into the allowed range and step.
+	 * Sets the widget display scale, clamped and snapped to the provided step.
+	 *
+	 * @param scale requested scale
+	 * @param step  snap increment
+	 */
+	public void setScale(float scale, float step) {
+		this.scale = snapScale(scale, step);
+	}
+
+	/**
+	 * Sets scale with the given snap step and reapplies preferred size × scale.
+	 *
+	 * @param scale requested scale
+	 * @param step  snap increment
+	 */
+	public void setScaleAndApplyLayout(float scale, float step) {
+		setScale(scale, step);
+		applyPreferredSize();
+	}
+
+	/**
+	 * Snaps a raw scale value into the allowed range using {@link #SCALE_STEP}.
 	 *
 	 * @param scale raw scale
 	 * @return snapped scale
 	 */
 	public static float snapScale(float scale) {
+		return snapScale(scale, SCALE_STEP);
+	}
+
+	/**
+	 * Snaps a raw scale value into the allowed range using the provided step.
+	 *
+	 * @param scale raw scale
+	 * @param step  snap increment (falls back to {@link #SCALE_STEP} when invalid)
+	 * @return snapped scale
+	 */
+	public static float snapScale(float scale, float step) {
+		float resolvedStep = step > 0f ? step : SCALE_STEP;
 		float clamped = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale));
-		return Math.round(clamped / SCALE_STEP) * SCALE_STEP;
+		float snapped = Math.round(clamped / resolvedStep) * resolvedStep;
+		snapped = Math.max(SCALE_MIN, Math.min(SCALE_MAX, snapped));
+		// Stabilize binary float noise for fine steps (e.g. 0.01).
+		return Math.round(snapped * 100f) / 100f;
 	}
 
 	/**
@@ -193,13 +239,24 @@ public abstract class Widget {
 	}
 
 	/**
-	 * Resolves the widget's screen-space bounds for the provided viewport context.
+	 * Resolves layout bounds from anchor, position, width, and height.
 	 *
 	 * @param context viewport context
-	 * @return resolved bounds
+	 * @return screen-space bounds
 	 */
 	public WidgetBounds resolveBounds(WidgetContext context) {
 		return anchor.resolve(context.screenWidth(), context.screenHeight(), position, width, height);
+	}
+
+	/**
+	 * Invisible interaction rectangle used for selection, dragging, resize handles,
+	 * and hit detection. Independent of what {@link #render} draws.
+	 *
+	 * @param context viewport context
+	 * @return interaction bounds (preferred size × scale, after user resize)
+	 */
+	public WidgetBounds getInteractionBounds(WidgetContext context) {
+		return resolveBounds(context);
 	}
 
 	/**
@@ -210,7 +267,7 @@ public abstract class Widget {
 	public abstract void update(WidgetContext context);
 
 	/**
-	 * Renders the widget for the current frame.
+	 * Renders the widget for the current frame without card chrome.
 	 *
 	 * @param context widget-scoped context
 	 */

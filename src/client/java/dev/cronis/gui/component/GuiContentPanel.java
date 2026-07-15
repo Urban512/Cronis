@@ -55,7 +55,7 @@ public class GuiContentPanel extends GuiComponent {
 			return;
 		}
 
-		scrollPanel.addChild(GuiLabel.section(activeCategory));
+		scrollPanel.addChild(GuiLabel.page(activeCategory));
 		scrollPanel.addChild(new GuiCard(activeCategory, "Settings for this section are coming soon."));
 	}
 
@@ -86,7 +86,7 @@ public class GuiContentPanel extends GuiComponent {
 	}
 
 	private void showGeneralContent() {
-		scrollPanel.addChild(GuiLabel.section("Welcome to Cronis"));
+		scrollPanel.addChild(GuiLabel.page("Welcome to Cronis"));
 		scrollPanel.addChild(new GuiCard("Welcome", "Your premium SkyBlock HUD framework."));
 		scrollPanel.addChild(new GuiCard("Latest News", "Cronis is in early development."));
 		scrollPanel.addChild(new GuiCard("Installed Modules", "No modules installed yet."));
@@ -94,7 +94,7 @@ public class GuiContentPanel extends GuiComponent {
 	}
 
 	private void showHudContent() {
-		scrollPanel.addChild(GuiLabel.section("General"));
+		scrollPanel.addChild(GuiLabel.page("General"));
 		bindHudPanel(fpsPanel, "fps");
 		bindHudPanel(tpsPanel, "tps");
 		bindHudPanel(pingPanel, "ping");
@@ -110,7 +110,7 @@ public class GuiContentPanel extends GuiComponent {
 	}
 
 	private void showSpotifyContent() {
-		scrollPanel.addChild(GuiLabel.section("Spotify"));
+		scrollPanel.addChild(GuiLabel.page("Spotify"));
 
 		WidgetManager.get()
 				.getWidget("spotify")

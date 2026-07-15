@@ -9,6 +9,7 @@ import dev.cronis.gui.overlay.GuiOverlayManager;
 import dev.cronis.gui.render.CardRenderer;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.GuiMetrics;
 import dev.cronis.gui.theme.GuiTheme;
 import dev.cronis.gui.theme.ThemeManager;
@@ -31,12 +32,12 @@ public class GuiDropdown extends GuiComponent implements Focusable {
 	private static final int HEIGHT = GuiMetrics.HEIGHT_CONTROL;
 	private static final int ITEM_HEIGHT = GuiMetrics.HEIGHT_CONTROL;
 	private static final int CORNER_RADIUS = GuiMetrics.RADIUS_CONTROL;
-	private static final int MENU_RADIUS = GuiMetrics.RADIUS_COMPACT;
+	private static final int MENU_RADIUS = GuiMetrics.RADIUS_CONTROL;
 
 	private final List<String> options = new ArrayList<>();
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
-	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
-	private final FadeAnimation openAnimation = new FadeAnimation(12f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
+	private final FadeAnimation focusAnimation = new FadeAnimation(DesignTokens.ANIM_FOCUS);
+	private final FadeAnimation openAnimation = new FadeAnimation(DesignTokens.ANIM_PANEL);
 	private final DropdownMenuOverlay menuOverlay = new DropdownMenuOverlay();
 	private int selectedIndex;
 	private boolean hovered;
@@ -178,7 +179,17 @@ public class GuiDropdown extends GuiComponent implements Focusable {
 		int background = ColorUtil.lerp(theme.dropdownBackground(), theme.controlHover(), hoverAnimation.getValue() * 0.35f);
 		int border = ColorUtil.lerp(theme.controlBorder(), theme.controlBorderFocused(), focusAnimation.getValue());
 
-		CardRenderer.draw(context, x, y, width, height, CardRenderer.Style.control(), background, border);
+		CardRenderer.draw(
+				context,
+				x,
+				y,
+				width,
+				height,
+				CardRenderer.Style.control(),
+				background,
+				border,
+				focusAnimation.getValue() > 0.35f || open
+		);
 
 		String label = getSelectedValue();
 		int textColor = enabled ? theme.textPrimary() : theme.controlDisabled();
@@ -220,10 +231,9 @@ public class GuiDropdown extends GuiComponent implements Focusable {
 				menuBounds.y(),
 				menuBounds.width(),
 				menuBounds.height(),
-				CardRenderer.Style.card(),
+				CardRenderer.Style.panel(),
 				menuBackground,
-				menuBorder,
-				theme.cardShadow()
+				menuBorder
 		);
 
 		for (int index = 0; index < options.size(); index++) {

@@ -18,7 +18,7 @@ final class InspectorHeader extends GuiComponent {
 	private static final int HEIGHT = GuiMetrics.HEIGHT_INSPECTOR_HEADER;
 	private static final int CLOSE_SIZE = 22;
 
-	private final GuiLabel titleLabel = GuiLabel.heading("Widget");
+	private final GuiLabel titleLabel = GuiLabel.title("Widget");
 	private Runnable onClose;
 	private boolean closeHovered;
 

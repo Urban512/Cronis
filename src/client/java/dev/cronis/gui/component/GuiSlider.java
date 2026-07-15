@@ -6,6 +6,7 @@ import dev.cronis.gui.focus.Focusable;
 import dev.cronis.gui.render.ColorUtil;
 import dev.cronis.gui.render.ProgressBarRenderer;
 import dev.cronis.gui.render.RoundedRenderer;
+import dev.cronis.gui.theme.DesignTokens;
 import dev.cronis.gui.theme.ThemeManager;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -25,8 +26,8 @@ public class GuiSlider extends GuiComponent implements Focusable {
 	private final float min;
 	private final float max;
 	private final float step;
-	private final FadeAnimation hoverAnimation = new FadeAnimation(10f);
-	private final FadeAnimation focusAnimation = new FadeAnimation(10f);
+	private final FadeAnimation hoverAnimation = new FadeAnimation(DesignTokens.ANIM_HOVER);
+	private final FadeAnimation focusAnimation = new FadeAnimation(DesignTokens.ANIM_FOCUS);
 	private final ValueAnimation valueAnimation;
 	private float value;
 	private boolean hovered;
@@ -45,7 +46,7 @@ public class GuiSlider extends GuiComponent implements Focusable {
 		this.step = Math.max(0f, step);
 		this.value = snap(clamp(value));
 		this.height = 28;
-		this.valueAnimation = new ValueAnimation(16f, min, max, this.value);
+		this.valueAnimation = new ValueAnimation(DesignTokens.ANIM_PANEL, min, max, this.value);
 		this.valueAnimation.setImmediate(this.value);
 	}
 

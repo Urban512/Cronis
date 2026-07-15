@@ -7,6 +7,13 @@ import net.minecraft.resources.Identifier;
 
 /**
  * Draws Cronis PNG icons from the asset pipeline with vector fallbacks.
+ * <p>
+ * Prefer {@link #draw(GuiGraphicsExtractor, Icon, int, int, int, int)} (or the
+ * name-based overload) over direct texture blits so icon packs can plug in later
+ * without rewriting controls. Icons resolve through {@link AssetManager#icon(String)}
+ * from {@code assets/cronis/icons/<name>.png}; missing textures fall back to
+ * {@link LegacyIconRenderer}. The {@code color} argument is reserved for tinting
+ * (theme / pack recolors) and must remain part of every draw path.
  */
 public final class IconManager {
 	private IconManager() {
